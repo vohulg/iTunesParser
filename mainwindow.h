@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QtSql>
+#include "quazip.h"
+#include "quazipfile.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +25,15 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString pathToAllBackup;
+    QString currentBackup;
+    void runTest();
+    void setBackUpRootPath();
+    void showAllBackups();
+    void parseDb(QString backupFullPath);
+    bool connectDatabase(const QString& database);
+
+    QSqlDatabase db;
+    bool copyFilesToTmpDir(QMap<QString, QString> mapIosPathAndLocalPath);
 };
 
 #endif // MAINWINDOW_H
