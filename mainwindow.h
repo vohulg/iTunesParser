@@ -34,6 +34,7 @@ private:
 
     QSqlDatabase db;
     bool copyFilesToTmpDir(QMap<QString, QString> mapIosPathAndLocalPath);
+    bool getMediaFilesPAths(QMap<QString, QString> mapIosPathAndLocalPath);
 };
 
 #endif // MAINWINDOW_H
