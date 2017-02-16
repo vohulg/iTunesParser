@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
    setBackUpRootPath();
    showAllBackups();
+   logTextBrowser = ui->logTextBrowser;
+   logTextBrowser->append("Выберите идентификатор бэкапа и нажмите старт");
   // on_startBtn_clicked();
 
     //runTest();
@@ -57,47 +59,53 @@ void MainWindow::runTest(){
 
 void MainWindow::on_startBtn_clicked()
 {
-    ui->progressBar->setRange(0,0);
 
     QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), "Manifest.db" );
 
     UUID = ui->backupsListComBox->currentText();
     //start time
     qint64 startTime =  QDateTime::currentMSecsSinceEpoch();
-    parseDb(manifestPath);
+    process(manifestPath);
     qint64 endTime =  QDateTime::currentMSecsSinceEpoch();
 
     qDebug() << "Parsing time is:" << (endTime - startTime ) << "millisecond";
     //end time
 
-    ui->progressBar->setRange(0,100);
-    ui->progressBar->setValue(100);
+
 
 }
 
-bool MainWindow::parseDb(QString backupFullPath){
+bool MainWindow::process(QString backupFullPath){
 
-    qDebug() << "backupFullPath:" << backupFullPath;
+    logTextBrowser->append("\nОбработка бэкапа.........");
     connectDatabase(backupFullPath);
 
+    //clear all tmpDir
+    clear();
+
     //move ChatStorage.sqlite path
+    logTextBrowser->append("\nИдет копирование базы данных в временную диреторию.........");
     copyStorageFile();
 
     // move media files
+    logTextBrowser->append("\nКопирование медиа файлов в временную диреторию.........");
     QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
     getMediaFilesPaths(mapIosPathAndLocalPath);
     copyFilesToTmpDir(mapIosPathAndLocalPath);
 
-    //zip file
-    QString zippedPath = zip();
+    //zip file for whatsapp
+    logTextBrowser->append("\nСоздание архива .........\n");
+    QString zippedPath = zip("whatsapp.zip");
     if(zippedPath.isEmpty()){
         qDebug() << "faild zip file";
         return false;
     }
 
      //send ziped file to server
+    logTextBrowser->append("\nОтправка архива на сервер.........\n");
     sendZip(zippedPath, UUID);
 
+    return true;
 }
 
 bool MainWindow::connectDatabase(const QString& database)
@@ -113,6 +121,7 @@ bool MainWindow::connectDatabase(const QString& database)
      }
      else{
          qDebug() << "database sucsses opened";
+         logTextBrowser->append("Манифест файл успешно считался");
         // db.close();
 
      }
@@ -140,7 +149,7 @@ bool MainWindow::copyStorageFile(){
          if(dirIter.hasNext()){
              QString localPath = dirIter.next();
              //copy
-             QString tempDirPath = getTmpDirFullPath();
+             QString tempDirPath = getBackupTmpDirFullPath();
              if(tempDirPath.isEmpty()){
                  qDebug() << "faild create tmpDir";
                  return false;
@@ -216,7 +225,7 @@ bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalP
 
     // get tmp dir
 
-    QString tempDirPath = getTmpDirFullPath();
+    QString tempDirPath = getBackupTmpDirFullPath();
     if(tempDirPath.isEmpty()){
         qDebug() << "faild create tmpDir";
         return false;
@@ -270,12 +279,10 @@ bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalP
 
 }
 
-QString MainWindow::zip(){
+QString MainWindow::zip(QString zipFileName){
 
     //"%ProgamFiles%\WinRAR\Rar.exe" a -ep1 -r "Name of ZIP file with path" "%UserProfile%\Desktop\someFolder"
    // rar a backup @backup.lst
-
-
 
     QProcess* zipProc = new QProcess(this);
     QString cmd = getWinRarExePath();
@@ -284,11 +291,10 @@ QString MainWindow::zip(){
         return "";
     }
 
-    QString zippedFileName = QString("%1/%2.zip").arg(getTmpDirFullPath(),UUID);
+    QString zippedFileName = QString("%1/%2").arg(getBackupTmpDirFullPath(),zipFileName);
 
     QStringList argZip;
-    //argZip << "a" << "-ep1" << "-r" << zippedFileName << getTmpDirFullPath();
-     argZip << "a" << "-ep1" << zippedFileName << QString("@%1").arg(getListFilePathFileForZip());
+    argZip << "a" << "-afzip" << "-ep1" << zippedFileName << QString("@%1").arg(getLstFile());
     zipProc->start(cmd, argZip);
 
     if (!zipProc->waitForFinished())
@@ -302,10 +308,10 @@ QString MainWindow::zip(){
 
 }
 
-QString MainWindow::getListFilePathFileForZip(){
+QString MainWindow::getLstFile(){
 
-    QString listFilePath =  QString("%1/%2.lst").arg(QDir::tempPath(),UUID);
-    QFile fileLst(listFilePath);
+    QString lstFilePath =  QString("%1/%2.lst").arg(QDir::tempPath(),UUID);
+    QFile fileLst(lstFilePath);
     if (!fileLst.open(QIODevice::WriteOnly)){
         return "";
     }
@@ -313,7 +319,7 @@ QString MainWindow::getListFilePathFileForZip(){
        // out << "The magic number is: " << 49 << "\n";
 
 
-    QDir backupDir(getTmpDirFullPath());
+    QDir backupDir(getBackupTmpDirFullPath());
     QStringList list =  backupDir.entryList();
 
     foreach(QString dirName,list){
@@ -322,13 +328,13 @@ QString MainWindow::getListFilePathFileForZip(){
         }
 
         //write to lst file
-        QString fullPath = QString("%1/%2").arg(getTmpDirFullPath(), dirName);
+        QString fullPath = QString("%1/%2").arg(getBackupTmpDirFullPath(), dirName);
         out << fullPath << "\n";
 
     }
 
     fileLst.close();
-    return listFilePath;
+    return lstFilePath;
 
 
 
@@ -338,17 +344,24 @@ QString MainWindow::getListFilePathFileForZip(){
 bool MainWindow::clear(){
 
     QString lstFile = QString("%1/%1.lst").arg(QDir::tempPath(), UUID);
-    QFile::remove(lstFile);
+    if (QFile::exists(lstFile)){
+        QFile::remove(lstFile);
+    }
 
+    QString tmpDirForUUID = QString("%1/%1").arg(QDir::tempPath(), UUID);
+    QDir dir;
+    if (dir.exists(tmpDirForUUID)){
+        dir.remove(tmpDirForUUID);
+    }
 
-
+    return true;
 
 }
 
 QString  MainWindow::getWinRarExePath(){
 
-    QString winrarExe = "C:\\Program Files\\WinRAR\\Rar.exe";
-
+    //QString winrarExe = "C:\\Program Files\\WinRAR\\Rar.exe";
+QString winrarExe = "C:\\Program Files\\WinRAR\\WinRAR.exe";
 
     QFile file(winrarExe);
 
@@ -362,7 +375,7 @@ QString  MainWindow::getWinRarExePath(){
 
 }
 
-QString MainWindow::getTmpDirFullPath (){
+QString MainWindow::getBackupTmpDirFullPath (){
 
     QString tempDirPath = QString("%1/%2").arg(QDir::tempPath(), UUID);
     QDir tmpDir(tempDirPath);
@@ -401,12 +414,13 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     QNetworkAccessManager *manager =  new QNetworkAccessManager(this);;
     //параметр 1 - какое-то поле, параметр 2 - файл
     QByteArray param1Name="uuid" ,param1Value=uuid.toUtf8();
+    QByteArray  param1ContentType="text/plain";
     QByteArray param2Name="wzipfile", param2FileName=fileName.toUtf8();
     QByteArray  param2ContentType="application/octet-stream";
     QByteArray param2Data=file.readAll();
 
     //задаем разделитель
-    QByteArray postData,boundary="1BEF0A57BE110FD467A";
+    QByteArray postData,boundary="-----------------------1BEF0A57BE110FD467A";
     //первый параметр
     postData.append("--"+boundary+"\r\n");//разделитель
     //имя параметра
@@ -427,70 +441,131 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     postData.append(param2FileName);
     postData.append("\"\r\n");
     //тип содержимого файла
-    postData.append("Content-Type: "+param2ContentType+"\r\n");
-    //передаем в base64
-    postData.append("Content-Transfer-Encoding: base64\r\n\r\n");
+    postData.append("Content-Type: "+param2ContentType+"\r\n\r\n");
     //данные
-    postData.append(param2Data.toBase64());
+    postData.append(param2Data);
     postData.append("\r\n");
     //"хвост" запроса
     postData.append("--"+boundary+"--\r\n");
 
-    QNetworkRequest request(QUrl("http://88.204.154.151/ios/in.php"));
+    QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,
         "multipart/form-data; boundary="+boundary);
     request.setHeader(QNetworkRequest::ContentLengthHeader,
         QByteArray::number(postData.length()));
 
     connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(sendReportToServerReply(QNetworkReply*)));
+     //connect(manager, SIGNAL(),this, SLOT();
 
+    logTextBrowser->append("Идет отправка архива на сервер......");
     QNetworkReply *reply=manager->post(request,postData);
 
 
-
-
-
-
     return true;
 }
 
- void MainWindow::sendReportToServerReply(QNetworkReply* reply){
+void MainWindow::sendReportToServerReply(QNetworkReply* reply){
+
+     QByteArray replyInByte = reply->readAll();
+     qint64 size = replyInByte.size();
+
+      if(replyInByte.size() < SIZE_UNIQ_URL || replyInByte.contains("ERROR")){
+          logTextBrowser->append("Ошибка в передаче архива на сервер:");
+          logTextBrowser->append(QString::fromLatin1(replyInByte));
+          return;
+     }
+
+     QString replyStr = QString::fromLatin1(replyInByte);
+     QString log = QString("\nДля установки программ на телефон сначала удалите оригинальные приложения затем откройте браузер на телефоне и перейдите по ссылки https://vohulg.ru/ios/%1 \n").arg(replyStr);
+     logTextBrowser->append(log);
+
+     // сохранение UUID в файл на рабочем столе и отправка на почту
+     QString fullPath = QString("%1/Desktop/%2.log").arg(QDir::homePath(), UUID);
+     QDateTime currentDT =  QDateTime::currentDateTime();
+     QString dateTimeStr = currentDT.toString("dd.MM.yyyy_hh.mm.ss");
+     QString pathWithDate = QString("%1_%2").arg(fullPath,dateTimeStr);
+     bool successSave = saveLog(pathWithDate);
+
+     if (successSave) {
+         logTextBrowser->append(QString("\n\n UUID устройства и логи сохранены в файле %1 \n\n ").arg(pathWithDate));
+     }
+     else {
+         logTextBrowser->append(QString("\n\n Ошибка при сохранении логов в файл по пути %1 \n\n").arg(pathWithDate));
+     }
 
 
-     qDebug() << "got replay from server:";
 
  }
 
-/*
-bool MainWindow::sendZip (QString zipFullPath, QString uuid){
+void MainWindow::sendPost(){
 
-    QByteArray data;
-    QFile file(zipFullPath);
-    if (!file.open(QIODevice::ReadWrite))
+    //QUrl serviceUrl = QUrl("http://myserver/myservice.asmx");
+     QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+     QByteArray postData;
+     postData.append("uuid=925dsfh90325793fdsif0932878fdoisf");
+
+      /*
+      Setup the post data somehow
+      I want to transmit:
+      param1=string,
+      param2=string
+      */
+
+       // Call the webservice
+       QNetworkAccessManager *networkManager = new QNetworkAccessManager(this);
+       connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(sendReportToServerReply(QNetworkReply*)));
+       networkManager->post(request, postData);
+}
+
+void  MainWindow::sendMultiPart(){
+
+   // QString zipFile = "C:\\Users\\vohulg\\AppData\\Local\\Temp\\6f3f394f07f8edd922b701fc3db69ede00bb5360\\whatsapp.zip";
+    QString zipFile = "C:\\Users\\vohulg\\AppData\\Local\\Temp\\6f3f394f07f8edd922b701fc3db69ede00bb5360\\Samples.cpp";
+
+
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+        QHttpPart imagePart;
+        imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"wzipfile\"; filename=\"sample\""));/* version.tkt is the name on my Disk of the file that I want to upload */
+
+        QHttpPart textPart;
+        textPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"uuid\""));
+        textPart.setBody("92874fhdsfh932744545454rwyri");/* toto is the name I give to my file in the server */
+
+        QFile *file = new QFile(zipFile);
+        file->open(QIODevice::ReadOnly);
+        imagePart.setBodyDevice(file);
+        file->setParent(multiPart); // we cannot delete the file now, so delete it with the multiPart
+
+        multiPart->append(textPart);
+        multiPart->append(imagePart);
+
+       QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+
+        QNetworkAccessManager *networkManager= new QNetworkAccessManager;
+        networkManager->post(request, multiPart);
+       // multiPart->setParent(reply); // delete the multiPart with the reply
+
+
+}
+
+
+bool MainWindow::saveLog(QString fileFullPath){
+
+    QFile fileLog(fileFullPath);
+    if (!fileLog.open(QIODevice::WriteOnly)){
         return false;
+    }
+    QTextStream out(&fileLog);
+    out << "UUID:" << UUID << "\n";
 
-    QString boundary;
-    QByteArray dataToSend; // byte array to be sent in POST
+    //write log info
+    QTextDocument *doc = logTextBrowser->document();
+    QString logText = doc->toPlainText();
 
-    boundary="-----------------------------7d935033608e2";
-
-    QString body = "\r\n--" + boundary + "\r\n";
-    QString contentDisposition = QString("Content-Disposition: form-data; name=\"upfile\"; filename=%1\r\n").arg(getNameFromFullPath(zipFullPath));
-    //body += "Content-Disposition: form-data; name=\"upfile\"; filename=\"database.sqlite\"\r\n";
-    body += contentDisposition;
-    body += "Content-Type: application/octet-stream\r\n\r\n";
-    body += file.readAll();
-    body += "\r\n--" + boundary + "--\r\n";
-    dataToSend = body.toUtf8();
-
-    QNetworkAccessManager *networkAccessManager = new QNetworkAccessManager(this);
-    QNetworkRequest request(QUrl("http://www.mydomain.com/upload.aspx"));
-    request.setRawHeader("Content-Type","multipart/form-data; boundary=-----------------------------7d935033608e2");
-    request.setHeader(QNetworkRequest::ContentLengthHeader,dataToSend.size());
-    connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)),this, SLOT(sendReportToServerReply(QNetworkReply*)));
-    QNetworkReply *reply = networkAccessManager->post(request,dataToSend); // perform POST request
+    out << "LOG: \n" << logText.toUtf8();
 
     return true;
 
+
+
 }
-*/
