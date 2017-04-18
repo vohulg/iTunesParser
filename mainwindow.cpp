@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "QDir"
 #include "QDebug"
+#include "QFileDialog"
+#include "QMessageBox"
 
 #define TEST
 
@@ -14,7 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
    setBackUpRootPath();
    showAllBackups();
    logTextBrowser = ui->logTextBrowser;
-   logTextBrowser->append("Выберите идентификатор бэкапа и нажмите старт");
+   logTextBrowser->append("1. Загрузите файс с номером задания");
+   logTextBrowser->append("2. Выберите идентификатор бэкапа и нажмите старт");
+   ui->startBtn->setEnabled(false);
   // on_startBtn_clicked();
 
     //runTest();
@@ -412,23 +416,50 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
         return false;
 
     QNetworkAccessManager *manager =  new QNetworkAccessManager(this);;
-    //параметр 1 - какое-то поле, параметр 2 - файл
+    //параметр 1 - uuid, параметр 2 - файл параметр 3 - guid
     QByteArray param1Name="uuid" ,param1Value=uuid.toUtf8();
     QByteArray  param1ContentType="text/plain";
+
+    QByteArray param3Name="guid" ,param3Value=GuidByteArr;
+    QByteArray  param3ContentType="text/plain";
+
+    QByteArray paramNameUrl="url" ,paramUrlValue=URLByteArr;
+    QByteArray  paramUrlContentType="text/plain";
+
     QByteArray param2Name="wzipfile", param2FileName=fileName.toUtf8();
     QByteArray  param2ContentType="application/octet-stream";
     QByteArray param2Data=file.readAll();
 
     //задаем разделитель
     QByteArray postData,boundary="-----------------------1BEF0A57BE110FD467A";
-    //первый параметр
+
+    // параметр uuid
     postData.append("--"+boundary+"\r\n");//разделитель
-    //имя параметра
     postData.append("Content-Disposition: form-data; name=\"");
     postData.append(param1Name);
     postData.append("\"\r\n\r\n");
     //значение параметра
     postData.append(param1Value);
+    postData.append("\r\n");
+
+    // параметр guid
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(param3Name);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(param3Value);
+    postData.append("\r\n");
+
+    // параметр url
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(paramNameUrl);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(paramUrlValue);
     postData.append("\r\n");
 
     //параметр 2 - файл
@@ -567,5 +598,45 @@ bool MainWindow::saveLog(QString fileFullPath){
     return true;
 
 
+
+}
+
+//set guid from file
+void MainWindow::on_chooseFileBtn_clicked()
+{
+     ui->startBtn->setEnabled(false);
+     GuidByteArr = NULL;
+     URLByteArr = NULL;
+
+
+        QString filter = "Any files (*)";
+       QString* selecFilter = &filter;
+       QString fileWithGuid = QFileDialog::getOpenFileName(this, tr("Open image file"), tr("/"), filter, selecFilter, QFileDialog::DontConfirmOverwrite );
+
+       QFile fileGuid(fileWithGuid);
+       if (!fileGuid.open(QIODevice::ReadOnly)){
+           QMessageBox::critical(this, "Error", "File not exist");
+           return ;
+       }
+
+       fileGuid.readLine();// read alias, not used
+
+       //get guid
+       #define GUID_LEN 36
+       QByteArray GuidByteArr = fileGuid.readLine().trimmed();
+       if(GuidByteArr.length() != GUID_LEN){
+           QMessageBox::critical(this, "Error", "Guid data not match");
+           return ;
+       }
+
+       //get url
+       QByteArray URLByteArray = fileGuid.readLine().trimmed();
+       if(URLByteArray.length() < 5 || !URLByteArray.contains("http")){
+           QMessageBox::critical(this, "Error", "Url data not match");
+           return ;
+
+       }
+
+       ui->startBtn->setEnabled(true);\
 
 }

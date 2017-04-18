@@ -29,7 +29,9 @@ private slots:
     void on_startBtn_clicked();
     void sendReportToServerReply(QNetworkReply* reply);
 
-    void on_pushButton_clicked();
+    //void on_pushButton_clicked();
+
+    void on_chooseFileBtn_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +60,9 @@ private:
     void sendPost();
     void sendMultiPart();
     bool saveLog(QString fileFullPath);
+
+    QByteArray GuidByteArr;
+    QByteArray URLByteArr;
 };
 
 #endif // MAINWINDOW_H

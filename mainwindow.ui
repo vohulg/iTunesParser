@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>459</width>
     <height>378</height>
    </rect>
   </property>
@@ -58,7 +58,7 @@
      <rect>
       <x>15</x>
       <y>160</y>
-      <width>371</width>
+      <width>421</width>
       <height>131</height>
      </rect>
     </property>
@@ -76,13 +76,55 @@
      <string>Состояние</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Загрузить файл с guid</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="guidLine">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>10</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string>empty</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="chooseFileBtn">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Выбрать файл</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>459</width>
      <height>21</height>
     </rect>
    </property>
