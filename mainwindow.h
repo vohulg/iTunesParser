@@ -27,6 +27,7 @@ private slots:
      void showLog(const QString & log);
      void setBackUpRootPath();
      void showAllBackups();
+     void saveLogSlot( const QString & pathWithDate);
 private:
     VGParserThread* parserThread;
 

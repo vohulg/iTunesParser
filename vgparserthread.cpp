@@ -16,10 +16,7 @@ void VGParserThread::testProcess(){
         QString log = "Test log...";
        emit changeLog(log);
         sleep(3);
-
-
     }
-
 }
 
 void VGParserThread::setValues(QString manifestpathIn, QString UUIDIn, QSqlDatabase dbIn, QString currentBackupIn, QByteArray GuidByteArrIn, QByteArray URLByteArrIn)
@@ -45,17 +42,17 @@ bool VGParserThread::process(QString backupFullPath){
     clear();
 
     //move ChatStorage.sqlite path
-   // logTextBrowser->append("\nИдет копирование базы данных в временную диреторию.........");
+    emit changeLog("\nИдет копирование базы данных в временную диреторию.........");
     copyStorageFile();
 
     // move media files
-   // logTextBrowser->append("\nКопирование медиа файлов в временную диреторию.........");
+   emit changeLog("\nКопирование медиа файлов в временную диреторию.........");
     QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
     getMediaFilesPaths(mapIosPathAndLocalPath);
     copyFilesToTmpDir(mapIosPathAndLocalPath);
 
     //zip file for whatsapp
-   // logTextBrowser->append("\nСоздание архива .........\n");
+    emit changeLog("\nСоздание архива .........\n");
     QString zippedPath = zip("whatsapp.zip");
     if(zippedPath.isEmpty()){
         qDebug() << "faild zip file";
@@ -63,7 +60,7 @@ bool VGParserThread::process(QString backupFullPath){
     }
 
      //send ziped file to server
-   // logTextBrowser->append("\nОтправка архива на сервер.........\n");
+    emit changeLog("\nОтправка архива на сервер.........\n");
     sendZip(zippedPath, UUID);
 
     return true;
@@ -82,7 +79,7 @@ bool VGParserThread::connectDatabase(const QString& database)
      }
      else{
          qDebug() << "database sucsses opened";
-        // logTextBrowser->append("Манифест файл успешно считался");
+        emit changeLog("Манифест файл успешно считался");
         // db.close();
 
      }
@@ -441,7 +438,7 @@ bool VGParserThread::sendZip (QString zipFullPath, QString uuid){
     connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(sendReportToServerReply(QNetworkReply*)));
      //connect(manager, SIGNAL(),this, SLOT();
 
-   // logTextBrowser->append("Идет отправка архива на сервер......");
+   emit changeLog("Идет отправка архива на сервер......");
     QNetworkReply *reply=manager->post(request,postData);
 
 
@@ -454,28 +451,22 @@ void VGParserThread::sendReportToServerReply(QNetworkReply* reply){
      qint64 size = replyInByte.size();
 
       if(replyInByte.size() < SIZE_UNIQ_URL || replyInByte.contains("ERROR")){
-         // logTextBrowser->append("Ошибка в передаче архива на сервер:");
-         // logTextBrowser->append(QString::fromLatin1(replyInByte));
+         emit changeLog("Ошибка в передаче архива на сервер:");
+          emit changeLog(QString::fromLatin1(replyInByte));
           return;
      }
 
      QString replyStr = QString::fromLatin1(replyInByte);
      QString log = QString("\nДля установки программ на телефон сначала удалите оригинальные приложения затем откройте браузер на телефоне и перейдите по ссылки https://vohulg.ru/ios/%1 \n").arg(replyStr);
-    // logTextBrowser->append(log);
+    emit changeLog(log);
 
      // сохранение UUID в файл на рабочем столе и отправка на почту
      QString fullPath = QString("%1/Desktop/%2.log").arg(QDir::homePath(), UUID);
      QDateTime currentDT =  QDateTime::currentDateTime();
      QString dateTimeStr = currentDT.toString("dd.MM.yyyy_hh.mm.ss");
      QString pathWithDate = QString("%1_%2").arg(fullPath,dateTimeStr);
-     //bool successSave = saveLog(pathWithDate);
 
-    // if (successSave) {
-        // logTextBrowser->append(QString("\n\n UUID устройства и логи сохранены в файле %1 \n\n ").arg(pathWithDate));
-    // }
-    // else {
-        // logTextBrowser->append(QString("\n\n Ошибка при сохранении логов в файл по пути %1 \n\n").arg(pathWithDate));
-    // }
+     emit saveLogSig(pathWithDate);
 
 
 

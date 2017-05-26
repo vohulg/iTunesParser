@@ -49,6 +49,21 @@ void MainWindow::showAllBackups(){
 
 }
 
+void MainWindow::saveLogSlot(const QString & pathWithDate)
+{
+
+    bool successSave = saveLog(pathWithDate);
+
+    if (successSave) {
+       logTextBrowser->append(QString("\n\n UUID устройства и логи сохранены в файле %1 \n\n ").arg(pathWithDate));
+    }
+    else {
+       logTextBrowser->append(QString("\n\n Ошибка при сохранении логов в файл по пути %1 \n\n").arg(pathWithDate));
+    }
+
+
+}
+
 void MainWindow::setBackUpRootPath(){
 
     pathToAllBackup = QString("%1/AppData/Roaming/Apple Computer/MobileSync/Backup").arg(QDir::homePath());
@@ -67,6 +82,7 @@ void MainWindow::on_startBtn_clicked()
     parserThread = new VGParserThread();
 
     QObject::connect(parserThread, SIGNAL(changeLog(const QString &)), SLOT(showLog(const QString &)), Qt::QueuedConnection);
+    QObject::connect(parserThread, SIGNAL(saveLogSig(const QString &)), SLOT(saveLogSlot(const QString &)), Qt::QueuedConnection);
 
 
     parserThread->setValues(manifestPath, UUID, db, currentBackup, GuidByteArr, URLByteArr);

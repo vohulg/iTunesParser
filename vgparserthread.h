@@ -49,6 +49,7 @@ private:
 
 signals:
     void changeLog( const QString & log);
+    void saveLogSig( const QString & pathWithDate);
 
 
 };
