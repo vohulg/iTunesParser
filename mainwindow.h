@@ -2,15 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QtSql>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QHttpMultiPart>
-#include <QNetworkReply>
 #include <QTextBrowser>
+#include "vgparserthread.h"
 
-#define SIZE_UNIQ_URL 8
+
 
 
 namespace Ui {
@@ -26,12 +21,14 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_startBtn_clicked();
-    void sendReportToServerReply(QNetworkReply* reply);
-
-    //void on_pushButton_clicked();
-
-    void on_chooseFileBtn_clicked();
+     void on_startBtn_clicked();
+     void on_chooseFileBtn_clicked();
+     bool saveLog(QString fileFullPath);
+     void showLog(const QString & log);
+     void setBackUpRootPath();
+     void showAllBackups();
+private:
+    VGParserThread* parserThread;
 
 private:
     Ui::MainWindow *ui;
@@ -39,14 +36,17 @@ private:
     QString currentBackup;
     QString UUID; //use for name tmpFolder
     QTextBrowser* logTextBrowser;
-
-    void runTest();
-    void setBackUpRootPath();
-    void showAllBackups();
-    bool process(QString backupFullPath);
-    bool connectDatabase(const QString& database);
-
     QSqlDatabase db;
+
+    QByteArray GuidByteArr;
+    QByteArray URLByteArr;
+
+
+/*
+    void runTest();
+
+    bool process(QString backupFullPath);
+    bool connectDatabase(const QString& database);    
     bool copyFilesToTmpDir(QMap<QString, QString>* mapIosPathAndLocalPath);
     bool getMediaFilesPaths(QMap<QString, QString>* mapIosPathAndLocalPath);
     bool copyStorageFile();
@@ -59,10 +59,11 @@ private:
     QString getNameFromFullPath(QString fullPath);
     void sendPost();
     void sendMultiPart();
-    bool saveLog(QString fileFullPath);
 
-    QByteArray GuidByteArr;
-    QByteArray URLByteArr;
+    void sendReportToServerReply(QNetworkReply* reply);
+    */
+
+
 };
 
 #endif // MAINWINDOW_H

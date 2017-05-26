@@ -16,9 +16,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
+    vgparserthread.cpp
 
 
 HEADERS  += mainwindow.h \
+    vgparserthread.h
 
 
 FORMS    += mainwindow.ui
