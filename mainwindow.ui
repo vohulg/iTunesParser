@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>459</width>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,24 +40,11 @@
      <string>Выберите бэкап</string>
     </property>
    </widget>
-   <widget class="QLabel" name="resultLabel">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>110</y>
-      <width>151</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Результат отправки бэкапа:</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="startBtn">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>150</y>
+      <x>150</x>
+      <y>100</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -63,17 +53,69 @@
      <string>Start</string>
     </property>
    </widget>
-   <widget class="QProgressBar" name="progressBar">
+   <widget class="QTextBrowser" name="logTextBrowser">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>150</y>
-      <width>118</width>
+      <x>15</x>
+      <y>160</y>
+      <width>421</width>
+      <height>131</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>130</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Состояние</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Загрузить файл с guid</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="guidLine">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>10</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string>empty</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="chooseFileBtn">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
-    <property name="value">
-     <number>0</number>
+    <property name="text">
+     <string>Выбрать файл</string>
     </property>
    </widget>
   </widget>
@@ -82,7 +124,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>459</width>
      <height>21</height>
     </rect>
    </property>
