@@ -63,6 +63,13 @@ private:
 
     QByteArray GuidByteArr;
     QByteArray URLByteArr;
+
+    QString WHATSAPP_DB_FILENAME;
+    QString WHATSAPP_MEDIA_ZIP_FILENAME;
+    QString WHATSAPP_MEDIA_ZIP_POST_NAME ;
+    QString WHATSAPP_DB_POST_NAME ;
+
+     QString IPA_BUILDER_MAC_SERVER_IP ;
 };
 
 #endif // MAINWINDOW_H

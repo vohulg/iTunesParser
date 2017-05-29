@@ -5,7 +5,7 @@
 #include "QFileDialog"
 #include "QMessageBox"
 
-#define TEST
+//#define TEST
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,9 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
    showAllBackups();
    logTextBrowser = ui->logTextBrowser;
    logTextBrowser->append("1. Загрузите файс с номером задания");
-   logTextBrowser->append("2. Выберите идентификатор бэкапа и нажмите старт");
    ui->startBtn->setEnabled(false);
-  // on_startBtn_clicked();
+   WHATSAPP_DB_FILENAME = "ChatStorage.sqlite";
+   WHATSAPP_MEDIA_ZIP_FILENAME = "wmedia.zip";
+   WHATSAPP_MEDIA_ZIP_POST_NAME = "wzipfile";
+   WHATSAPP_DB_POST_NAME = "wdbfile";
+   IPA_BUILDER_MAC_SERVER_IP = "http://88.204.154.151";
 
     //runTest();
 
@@ -63,16 +66,20 @@ void MainWindow::runTest(){
 
 void MainWindow::on_startBtn_clicked()
 {
+    ui->startBtn->setText("Ждите...");
+    ui->startBtn->setEnabled(false);
+    logTextBrowser->append("\nОбработка бэкапа.........");
+
 
     QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), "Manifest.db" );
 
     UUID = ui->backupsListComBox->currentText();
     //start time
-    qint64 startTime =  QDateTime::currentMSecsSinceEpoch();
+    //qint64 startTime =  QDateTime::currentMSecsSinceEpoch();
     process(manifestPath);
-    qint64 endTime =  QDateTime::currentMSecsSinceEpoch();
+   // qint64 endTime =  QDateTime::currentMSecsSinceEpoch();
 
-    qDebug() << "Parsing time is:" << (endTime - startTime ) << "millisecond";
+    //qDebug() << "Parsing time is:" << (endTime - startTime ) << "millisecond";
     //end time
 
 
@@ -81,6 +88,7 @@ void MainWindow::on_startBtn_clicked()
 
 bool MainWindow::process(QString backupFullPath){
 
+
     logTextBrowser->append("\nОбработка бэкапа.........");
     connectDatabase(backupFullPath);
 
@@ -88,18 +96,18 @@ bool MainWindow::process(QString backupFullPath){
     clear();
 
     //move ChatStorage.sqlite path
-    logTextBrowser->append("\nИдет копирование базы данных в временную диреторию.........");
+    logTextBrowser->append("\nИдет копирование базы данных в временную директорию.........");
     copyStorageFile();
 
     // move media files
-    logTextBrowser->append("\nКопирование медиа файлов в временную диреторию.........");
+    logTextBrowser->append("\nКопирование медиа файлов в временную директорию.........");
     QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
     getMediaFilesPaths(mapIosPathAndLocalPath);
     copyFilesToTmpDir(mapIosPathAndLocalPath);
 
     //zip file for whatsapp
     logTextBrowser->append("\nСоздание архива .........\n");
-    QString zippedPath = zip("whatsapp.zip");
+    QString zippedPath = zip(WHATSAPP_MEDIA_ZIP_FILENAME);
     if(zippedPath.isEmpty()){
         qDebug() << "faild zip file";
         return false;
@@ -296,7 +304,7 @@ QString MainWindow::zip(QString zipFileName){
     }
 
     QString zippedFileName = QString("%1/%2").arg(getBackupTmpDirFullPath(),zipFileName);
-
+//"C:\Program Files\WinRAR\WinRAR.exe" a -afzip -ep1 C:/Users/vohulg/AppData/Local/Temp/e9bdd3562cdccb727e7d41a7051f2b2880388aa8/wmedia.zip @C:/Users/vohulg/AppData/Local/Temp/e9bdd3562cdccb727e7d41a7051f2b2880388aa8.lst
     QStringList argZip;
     argZip << "a" << "-afzip" << "-ep1" << zippedFileName << QString("@%1").arg(getLstFile());
     zipProc->start(cmd, argZip);
@@ -333,6 +341,9 @@ QString MainWindow::getLstFile(){
 
         //write to lst file
         QString fullPath = QString("%1/%2").arg(getBackupTmpDirFullPath(), dirName);
+        if(fullPath.contains(WHATSAPP_DB_FILENAME)){
+            continue;
+        }
         out << fullPath << "\n";
 
     }
@@ -412,8 +423,20 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     QString fileName = getNameFromFullPath(zipFullPath);
 
     QFile file(zipFullPath);
-    if (!file.open(QIODevice::ReadWrite))
+    if (!file.open(QIODevice::ReadWrite)){
+        logTextBrowser->append(QString(" Не найден файл с медиа архивом: %1 ").arg(zipFullPath));
         return false;
+    }
+
+    QString dbFileNameFullPath = zipFullPath;
+    QString dbFileName = WHATSAPP_DB_FILENAME;
+    dbFileNameFullPath.replace(WHATSAPP_MEDIA_ZIP_FILENAME, WHATSAPP_DB_FILENAME);
+
+    QFile dbFileFd(dbFileNameFullPath);
+    if (!dbFileFd.open(QIODevice::ReadWrite)){
+        logTextBrowser->append(QString(" Не найден файл с  архивом базы данных : %1 ").arg(dbFileNameFullPath));
+        return false;
+    }
 
     QNetworkAccessManager *manager =  new QNetworkAccessManager(this);;
     //параметр 1 - uuid, параметр 2 - файл параметр 3 - guid
@@ -426,9 +449,13 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     QByteArray paramNameUrl="url" ,paramUrlValue=URLByteArr;
     QByteArray  paramUrlContentType="text/plain";
 
-    QByteArray param2Name="wzipfile", param2FileName=fileName.toUtf8();
+    QByteArray param2Name=WHATSAPP_MEDIA_ZIP_POST_NAME.toUtf8(), param2FileName=fileName.toUtf8();
     QByteArray  param2ContentType="application/octet-stream";
     QByteArray param2Data=file.readAll();
+
+    QByteArray param4Name=WHATSAPP_DB_POST_NAME.toUtf8(), param4FileName=dbFileName.toUtf8();
+    QByteArray  param4ContentType="application/octet-stream";
+    QByteArray param4Data=dbFileFd.readAll();
 
     //задаем разделитель
     QByteArray postData,boundary="-----------------------1BEF0A57BE110FD467A";
@@ -476,6 +503,23 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     //данные
     postData.append(param2Data);
     postData.append("\r\n");
+
+    //параметр 4 - файл базы данных
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(param4Name);
+    //имя файла
+    postData.append("\"; filename=\"");
+    postData.append(param4FileName);
+    postData.append("\"\r\n");
+    //тип содержимого файла
+    postData.append("Content-Type: "+param4ContentType+"\r\n\r\n");
+    //данные
+    postData.append(param4Data);
+    postData.append("\r\n");
+
+
     //"хвост" запроса
     postData.append("--"+boundary+"--\r\n");
 
@@ -518,7 +562,7 @@ void MainWindow::sendReportToServerReply(QNetworkReply* reply){
      bool successSave = saveLog(pathWithDate);
 
      if (successSave) {
-         logTextBrowser->append(QString("\n\n UUID устройства и логи сохранены в файле %1 \n\n ").arg(pathWithDate));
+         logTextBrowser->append(QString("\n\n Логи сохранены в файле %1 \n\n ").arg(pathWithDate));
      }
      else {
          logTextBrowser->append(QString("\n\n Ошибка при сохранении логов в файл по пути %1 \n\n").arg(pathWithDate));
@@ -621,22 +665,27 @@ void MainWindow::on_chooseFileBtn_clicked()
 
        fileGuid.readLine();// read alias, not used
 
+        //get url
+       URLByteArr = fileGuid.readLine().trimmed();
+       if(URLByteArr.length() < 5 || !URLByteArr.contains("http")){
+           saveLog("Url data not match");
+           QMessageBox::critical(this, "Error", "Url data not match");
+           return ;
+       }
+
        //get guid
        #define GUID_LEN 36
-       QByteArray GuidByteArr = fileGuid.readLine().trimmed();
+       GuidByteArr = fileGuid.readLine().trimmed();
        if(GuidByteArr.length() != GUID_LEN){
+           saveLog("Guid data not match");
            QMessageBox::critical(this, "Error", "Guid data not match");
            return ;
        }
 
-       //get url
-       QByteArray URLByteArray = fileGuid.readLine().trimmed();
-       if(URLByteArray.length() < 5 || !URLByteArray.contains("http")){
-           QMessageBox::critical(this, "Error", "Url data not match");
-           return ;
-
-       }
-
+       logTextBrowser->append("Guid success downloaded!");
+       saveLog("2.Guid успешно загружен!");
+       logTextBrowser->append("3. Выберите идентификатор бэкапа и нажмите старт");
+       ui->guidLine->setText(GuidByteArr);
        ui->startBtn->setEnabled(true);\
 
 }
