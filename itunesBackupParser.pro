@@ -16,12 +16,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
+    instruction.cpp
 
 
 HEADERS  += mainwindow.h \
+    instruction.h
 
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    instruction.ui
 
 RESOURCES += \
     images.qrc

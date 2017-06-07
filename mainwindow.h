@@ -10,6 +10,8 @@
 #include <QNetworkReply>
 #include <QTextBrowser>
 
+#include "instruction.h"
+
 #define SIZE_UNIQ_URL 8
 
 
@@ -35,6 +37,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    Instruction instructionForm;
     QString pathToAllBackup;
     QString currentBackup;
     QString UUID; //use for name tmpFolder

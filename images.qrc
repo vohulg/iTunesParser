@@ -1,6 +1,14 @@
 <RCC>
     <qresource prefix="/images">
-        <file>IMG_0082.JPG</file>
-        <file>IMG_0088.JPG</file>
+        <file>screen/IMG_0269.PNG</file>
+        <file>screen/IMG_0270.PNG</file>
+        <file>screen/IMG_0271.PNG</file>
+        <file>screen/IMG_0272.PNG</file>
+        <file>screen/IMG_0273.PNG</file>
+        <file>screen/IMG_0274.PNG</file>
+        <file>screen/IMG_0275.PNG</file>
+        <file>screen/IMG_0276.PNG</file>
+        <file>screen/IMG_0277.PNG</file>
+        <file>screen/IMG_0278.PNG</file>
     </qresource>
 </RCC>

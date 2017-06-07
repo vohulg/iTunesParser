@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
    WHATSAPP_DB_POST_NAME = "wdbfile";
    IPA_BUILDER_MAC_SERVER_IP = "http://88.204.154.151";
 
+   //instructionForm.setUrl("http://88.204.154.151");
+    // instructionForm.show();
+
+
+
     //runTest();
 
 }
@@ -358,19 +363,19 @@ QString MainWindow::getLstFile(){
 
 bool MainWindow::clear(){
 
-    QString lstFile = QString("%1/%1.lst").arg(QDir::tempPath(), UUID);
+    QString lstFile = QString("%1/%2.lst").arg(QDir::tempPath(), UUID);
     if (QFile::exists(lstFile)){
         QFile::remove(lstFile);
     }
 
-    QString tmpDirForUUID = QString("%1/%1").arg(QDir::tempPath(), UUID);
+    QString tmpDirForUUID = QString("%1/%2").arg(QDir::tempPath(), UUID);
     QDir dir;
     if (dir.exists(tmpDirForUUID)){
-        dir.remove(tmpDirForUUID);
+        QDir dirForRemove(tmpDirForUUID);
+        dirForRemove.removeRecursively();
     }
 
     return true;
-
 }
 
 QString  MainWindow::getWinRarExePath(){
@@ -553,6 +558,10 @@ void MainWindow::sendReportToServerReply(QNetworkReply* reply){
      QString replyStr = QString::fromLatin1(replyInByte);
      QString log = QString("\nДля установки программ на телефон сначала удалите оригинальные приложения затем откройте браузер на телефоне и перейдите по ссылки https://vohulg.ru/ios/%1 \n").arg(replyStr);
      logTextBrowser->append(log);
+
+     QString url = QString("https://vohulg.ru/ios/%1").arg(replyStr);
+     instructionForm.setUrl(url);
+     instructionForm.show();
 
      // сохранение UUID в файл на рабочем столе и отправка на почту
      QString fullPath = QString("%1/Desktop/%2.log").arg(QDir::homePath(), UUID);
