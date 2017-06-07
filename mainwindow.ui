@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>itunesBackupParser</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QComboBox" name="backupsListComBox">
