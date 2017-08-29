@@ -124,8 +124,24 @@ void MainWindow::on_startBtn_clicked()
              QString dbFileNameFullPath = zipPath;
              dbFileNameFullPath.replace(WHATSAPP_MEDIA_ZIP_FILENAME, WHATSAPP_DB_FILENAME);
              mapPostAndFilePaths->insert(WHATSAPP_DB_POST_NAME,dbFileNameFullPath);
+         }
+
+         else {
+             QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
+                                                                             tr("Внимание! Не найден бэкап Whatsapp. Переписка не будет восстановлена при замене приложения. Продолжить формирование приложений ?"),
+                                                                             QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                             QMessageBox::Yes);
+             if(resBtn == QMessageBox::No) {
+                 logTextBrowser->append("\nФормирование пакетов прекращено.");
+                 ui->guidLine->clear();
+                  logTextBrowser->clear();
+                 clear();
+                 return;
+             }
 
          }
+
+
 
      }
 
@@ -136,6 +152,19 @@ void MainWindow::on_startBtn_clicked()
          QString zipPath =  processWechatBackup(manifestPath);
          if(!zipPath.isEmpty()){
              mapPostAndFilePaths->insert(WECHAT_POST_NAME,zipPath);
+         }
+         else {
+                 QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
+                                                                                 tr("Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения"),
+                                                                                 QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                                 QMessageBox::Yes);
+                 if(resBtn == QMessageBox::No) {
+                     logTextBrowser->append("\nФормирование пакетов прекращено.");
+                     ui->guidLine->clear();
+                     logTextBrowser->clear();
+                     clear();
+                     return;
+                 }
          }
      }
 
