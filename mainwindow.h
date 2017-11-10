@@ -19,6 +19,8 @@
 #define TELEGRAM_IDENTITY 2
 #define VIBER_IDENTITY 3
 
+#define UUID_LENTH 40
+
 
 
 namespace Ui {
@@ -59,10 +61,15 @@ private:
 
     QString processWechatBackup(QString backupFullPath);
     QString processWhatsappBackup (QString backupFullPath);
+    QString processViberBackup (QString backupFullPath);
+    void showAlertWithMsg(QString message);
 
     QSqlDatabase db;
     bool copyFilesToTmpDir(QMap<QString, QString>* mapIosPathAndLocalPath, int lenghForCut);
     bool getMediaFilesPaths(QMap<QString, QString>* mapIosPathAndLocalPath, QString sql);
+
+    QMap<QString, QString>* getMapForViber(QMap<QString, QString>* mapIosPathAndLocalPath);
+
     QString copyStorageFile();
     QString getBackupTmpDirFullPath();
     QString zip(QString zipFileName);
@@ -89,6 +96,9 @@ private:
 
      QString WECHAT_DB_FILE ;
       QString WECHAT_POST_NAME ;
+
+      QString VIBER_DB_FILE ;
+       QString VIBER_POST_NAME ;
 
      QString IPA_BUILDER_MAC_SERVER_IP ;
 

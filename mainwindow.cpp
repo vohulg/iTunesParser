@@ -28,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
    WECHAT_DB_FILE = "wechat_dbfile.zip";
    WECHAT_POST_NAME = "wechat_zip";
 
+   VIBER_DB_FILE = "viber_dbfile.zip";
+   VIBER_POST_NAME = "viber_zip";
+
 
 
    //instructionForm.setUrl("http://88.204.154.151");
@@ -92,14 +95,14 @@ void MainWindow::on_startBtn_clicked()
 
     UUID = ui->backupsListComBox->currentText();
 
+   // if(UUID.isEmpty() || UUID.trimmed().length() != UUID_LENTH){
     if(UUID.isEmpty()){
         ui->startBtn->setEnabled(true);
         ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 1px; border-color: red; }");
         QMessageBox msgBox;
-        msgBox.setText("Введите UUID устройства");
+        msgBox.setText("Введите корректный UUID устройства длиной 40 символов ");
         msgBox.exec();
         return;
-
     }
 
     ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 1px; border-color: black; }");
@@ -129,8 +132,8 @@ void MainWindow::on_startBtn_clicked()
          else {
              QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
                                                                              tr("Внимание! Не найден бэкап Whatsapp. Переписка не будет восстановлена при замене приложения. Продолжить формирование приложений ?"),
-                                                                             QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
-                                                                             QMessageBox::Yes);
+                                                                             QMessageBox::No | QMessageBox::Yes,
+                                                                             QMessageBox::No);
              if(resBtn == QMessageBox::No) {
                  logTextBrowser->append("\nФормирование пакетов прекращено.");
                  ui->guidLine->clear();
@@ -155,13 +158,15 @@ void MainWindow::on_startBtn_clicked()
          }
          else {
                  QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
-                                                                                 tr("Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения"),
-                                                                                 QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
-                                                                                 QMessageBox::Yes);
+                                                                                 tr("Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения. Все равно продолжить формирование пакета ?"),
+                                                                                 QMessageBox::No | QMessageBox::Yes,
+                                                                                 QMessageBox::No);
                  if(resBtn == QMessageBox::No) {
                      logTextBrowser->append("\nФормирование пакетов прекращено.");
                      ui->guidLine->clear();
                      logTextBrowser->clear();
+
+                    // showAlertWithMsg("Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения. Все равно продолжить формирование пакета ?");
                      clear();
                      return;
                  }
@@ -170,12 +175,104 @@ void MainWindow::on_startBtn_clicked()
 
      if(ui->ViberAppCheckBox->isChecked()){
          logTextBrowser->append("\nИдет Обработка файлов для мессенджера VIBER.........");
+          repaint();
+         QString zipPath =  processViberBackup(manifestPath);
+         if(!zipPath.isEmpty()){
+             mapPostAndFilePaths->insert(VIBER_POST_NAME,zipPath);
+         }
+         else {
+                 QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
+                                                                                 tr("Внимание! Не найден бэкап VIBER. Переписка не будет восстановлена при замене приложения. Все равно продолжить формирование пакета ?"),
+                                                                                 QMessageBox::No | QMessageBox::Yes,
+                                                                                 QMessageBox::No);
+                 if(resBtn == QMessageBox::No) {
+                     logTextBrowser->append("\nФормирование пакетов прекращено.");
+                     ui->guidLine->clear();
+                     logTextBrowser->clear();
+
+                     showAlertWithMsg("Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения");
+                     clear();
+                     return;
+                 }
+         }
 
      }
 
   sendAllBackup(mapPostAndFilePaths, UUID);
 
 }
+
+
+void MainWindow::showAlertWithMsg(QString message){
+
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
+                                                                    message,
+                                                                    QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                    QMessageBox::Yes);
+    if(resBtn == QMessageBox::No) {
+        logTextBrowser->append("\nФормирование пакетов прекращено.");
+        ui->guidLine->clear();
+        logTextBrowser->clear();
+
+}
+
+}
+
+
+
+QString MainWindow::processViberBackup (QString backupFullPath) {
+
+    QMap <QString, QString> *mapIosPathAndLocalPath =new QMap<QString, QString>();
+    QString sqlQuery = "select * from files where (domain LIKE \"%viber%\" and flags=1 AND relativePath LIKE \"Documents%\") OR (relativePath LIKE \"%Contacts.data\")  ";
+
+    getMediaFilesPaths(mapIosPathAndLocalPath, sqlQuery);
+
+    QMap<QString, QString>* filtredMap = getMapForViber(mapIosPathAndLocalPath);
+
+    QString libraryWordForCut = "Documents/";
+
+    if(filtredMap->count() > 0){
+        copyFilesToTmpDir(filtredMap, libraryWordForCut.length());
+        QString zippedPath = zip(VIBER_DB_FILE);
+        if(zippedPath.isEmpty()){
+            qDebug() << "faild zip viber db file";
+        }
+        qDebug() << "Success zip viber db file";
+        return zippedPath;
+
+    }
+
+    else
+        return "";
+
+}
+
+
+QMap<QString, QString>* MainWindow::getMapForViber(QMap<QString, QString>* mapIosPathAndLocalPath){
+
+    QMapIterator<QString, QString> iter(*mapIosPathAndLocalPath);
+
+    while (iter.hasNext()) {
+
+        iter.next();
+        //Library/Media/77017213945-1409280046@g.us/2/2/220f0a3e-a074-4ade-b2f2-2631be0f5a11.thumb
+        QString iosPath  = iter.key();
+
+        //"C:/Users/Admin/AppData/Roaming/Apple Computer/MobileSync/Backup/1b5b94b83e762264209e8482ff965434f0dcd1ab/00/0095d94891ca2b7c2754fe234854b2e34807b57a"
+        QString localPath = iter.value();
+
+        if(iosPath.contains("com.viber/database/Contacts.data")){
+            mapIosPathAndLocalPath->insert("Documents/Contacts.data",iter.value() );
+            mapIosPathAndLocalPath->remove(iter.key());
+        }
+
+    }
+
+    return mapIosPathAndLocalPath;
+
+}
+
+
 
 QString MainWindow::processWhatsappBackup (QString backupFullPath){
 
