@@ -210,6 +210,19 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QCheckBox" name="noRestoreCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Не восстанавливать видео файлы</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">

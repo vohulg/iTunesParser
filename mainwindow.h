@@ -84,7 +84,15 @@ private:
 
     bool sendAllBackup (QMap <QString, QString>* mapPostAndFilePath, QString uuid);
     QByteArray getAppList();
+    quint64 dir_size(const QString & str);
+    void showAlertWithInfoMsg(QString message);
 
+    QString getBackupTmpDirFullPath_ForResult();
+    void moveBackupsToResultFolder();
+
+    QString ALERT_STR;
+    qint64 MAX_BYTE_PERMIT_FOR_BACKUP;
+    qint64 SIZE_OF_BACKUP_VERY_BIG;
 
     QByteArray GuidByteArr;
     QByteArray URLByteArr;

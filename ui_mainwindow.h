@@ -49,6 +49,7 @@ public:
     QPushButton *chooseFileBtn;
     QGroupBox *groupBox_3;
     QComboBox *backupsListComBox;
+    QCheckBox *noRestoreCheckBox;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
     QMenuBar *menuBar;
@@ -112,6 +113,9 @@ public:
         backupsListComBox->setObjectName(QStringLiteral("backupsListComBox"));
         backupsListComBox->setGeometry(QRect(10, 20, 651, 22));
         backupsListComBox->setEditable(true);
+        noRestoreCheckBox = new QCheckBox(groupBox_3);
+        noRestoreCheckBox->setObjectName(QStringLiteral("noRestoreCheckBox"));
+        noRestoreCheckBox->setGeometry(QRect(20, 50, 211, 21));
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -150,6 +154,7 @@ public:
         guidLine->setPlaceholderText(QApplication::translate("MainWindow", "empty", 0));
         chooseFileBtn->setText(QApplication::translate("MainWindow", "\320\222\321\213\320\261\321\200\320\260\321\202\321\214 \321\204\320\260\320\271\320\273", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\261\321\215\320\272\320\260\320\277 \320\270\320\273\320\270 \320\262\320\262\320\265\320\264\320\270\321\202\320\265 uuid \321\203\321\201\321\202\321\200\320\276\320\271\321\201\321\202\320\262\320\260 \321\201 iTunes", 0));
+        noRestoreCheckBox->setText(QApplication::translate("MainWindow", "\320\235\320\265 \320\262\320\276\321\201\321\201\321\202\320\260\320\275\320\260\320\262\320\273\320\270\320\262\320\260\321\202\321\214 \320\262\320\270\320\264\320\265\320\276 \321\204\320\260\320\271\320\273\321\213", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217", 0));
     } // retranslateUi
 
