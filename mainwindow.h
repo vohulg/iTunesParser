@@ -35,6 +35,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    QString getGUID_FILE_PATH() const;
+    void setGUID_FILE_PATH(const QString &value);
+
+public slots:
+    void  finishFetchProfile(int, QProcess::ExitStatus);
+
 private slots:
     void on_startBtn_clicked();
     void sendReportToServerReply(QNetworkReply* reply);
@@ -44,6 +50,8 @@ private slots:
     void on_chooseFileBtn_clicked();
 
     void on_action_triggered();
+
+    void on_btnUpdate_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -73,6 +81,9 @@ private:
     QString copyStorageFile();
     QString getBackupTmpDirFullPath();
     QString zip(QString zipFileName);
+    QString zipForMac(QString zipFileName);
+    QString zipForWin(QString zipFileName);
+
     QString getWinRarExePath();
     QString getLstFile();
     bool clear();
@@ -89,6 +100,26 @@ private:
 
     QString getBackupTmpDirFullPath_ForResult();
     void moveBackupsToResultFolder();
+
+    void createLocalIpa(QMap <QString, QString>* mapPostAndFilePath, QString uuid);
+    void createRemoteIpa(QMap <QString, QString>* mapPostAndFilePath, QString uuid);
+
+    bool copyScripts();
+    bool createGuidFile();
+    bool copyBackupsToWorkDir();
+    bool getProfiles();
+    bool runVgModifyScript();
+    bool moveIpaToPublicDir();
+
+    QString getCurrentWorkDir();
+
+     QMap<QString, QString> getMapForCheckedApps();
+
+
+    int PROCESS_FETCH_PROFILE_COUNTS;
+
+    QString CURRENT_WORK_DIR;
+    QString GUID_FILE_PATH;
 
     QString ALERT_STR;
     qint64 MAX_BYTE_PERMIT_FOR_BACKUP;
