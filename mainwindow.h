@@ -40,6 +40,7 @@ public:
 
 public slots:
     void  finishFetchProfile(int, QProcess::ExitStatus);
+    void  finishModifyApp(int, QProcess::ExitStatus);
 
 private slots:
     void on_startBtn_clicked();
@@ -52,6 +53,12 @@ private slots:
     void on_action_triggered();
 
     void on_btnUpdate_clicked();
+
+    void on_actionOpenTasksDir_triggered();
+
+    void on_actionOpenCurrentTaskDir_triggered();
+
+    void on_btnOpenReadyIpaDir_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -109,14 +116,24 @@ private:
     bool copyBackupsToWorkDir();
     bool getProfiles();
     bool runVgModifyScript();
-    bool moveIpaToPublicDir();
+    bool openIpaInFileManager();
+
+    void informPathOfReadyIpa();
+
+
 
     QString getCurrentWorkDir();
 
      QMap<QString, QString> getMapForCheckedApps();
 
+     QString getAppLetterFromAppId(QString appId);
+
+     QString APPLE_ID;
+     QString APPLE_ID_PASS;
+     QString KEYCHAIN_PASS;
 
     int PROCESS_FETCH_PROFILE_COUNTS;
+     int PROCESS_MODIFY_APP;
 
     QString CURRENT_WORK_DIR;
     QString GUID_FILE_PATH;
@@ -125,8 +142,9 @@ private:
     qint64 MAX_BYTE_PERMIT_FOR_BACKUP;
     qint64 SIZE_OF_BACKUP_VERY_BIG;
 
-    QByteArray GuidByteArr;
-    QByteArray URLByteArr;
+    QByteArray GUID_BYTEARR;
+    QByteArray URL_BYTEARR;
+    QByteArray ALIAS_BYTEARR;
 
     QString WHATSAPP_DB_FILENAME;
     QString WHATSAPP_MEDIA_ZIP_FILENAME;

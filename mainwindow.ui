@@ -10,49 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>729</width>
-    <height>631</height>
+    <height>777</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>itunesBackupParser</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="startBtn">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>320</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Start</string>
-    </property>
-   </widget>
-   <widget class="QTextBrowser" name="logTextBrowser">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>390</y>
-      <width>691</width>
-      <height>171</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>350</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Состояние</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
@@ -66,201 +30,234 @@
      <string/>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>691</width>
-      <height>80</height>
+      <x>10</x>
+      <y>10</y>
+      <width>701</width>
+      <height>581</height>
      </rect>
     </property>
-    <property name="title">
-     <string>Приложения которые будут установлены на устройство</string>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <widget class="QCheckBox" name="whatsappAppcheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>91</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Whatsapp </string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="tabInstaller">
+     <attribute name="title">
+      <string>Установщик</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>691</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Приложения которые будут установлены на устройство</string>
+      </property>
+      <widget class="QCheckBox" name="whatsappAppcheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>91</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Whatsapp </string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="TelegramAppCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>40</y>
+         <width>91</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Telegram</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="WechatAppCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>20</y>
+         <width>70</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Wechat</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="ViberAppCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>40</y>
+         <width>70</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Viber</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>100</y>
+        <width>691</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Загрузить файл с guid</string>
+      </property>
+      <widget class="QLineEdit" name="guidLine">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>441</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>empty</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="chooseFileBtn">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>20</y>
+         <width>121</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Выбрать файл</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>170</y>
+        <width>691</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Выберите бэкап или введите UDID устройства с iTunes</string>
+      </property>
+      <widget class="QComboBox" name="backupsListComBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>651</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="noRestoreCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>251</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Не восстанавливать видео файлы</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="startBtn">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>260</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Start</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>300</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Состояние</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="logTextBrowser">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>330</y>
+        <width>691</width>
+        <height>171</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnOpenReadyIpaDir">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>510</y>
+        <width>131</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Готовые пакеты</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QCheckBox" name="TelegramAppCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>40</y>
-       <width>91</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Telegram</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="WechatAppCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>20</y>
-       <width>70</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Wechat</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="ViberAppCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>40</y>
-       <width>70</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Viber</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>170</y>
-      <width>691</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Загрузить файл с guid</string>
-    </property>
-    <widget class="QLineEdit" name="guidLine">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>441</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-     <property name="placeholderText">
-      <string>empty</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="chooseFileBtn">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>20</y>
-       <width>121</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Выбрать файл</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_3">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>240</y>
-      <width>691</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Выберите бэкап или введите UDID устройства с iTunes</string>
-    </property>
-    <widget class="QComboBox" name="backupsListComBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>651</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="noRestoreCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>50</y>
-       <width>251</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Не восстанавливать видео файлы</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_4">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>0</y>
-      <width>671</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Обновление</string>
-    </property>
-    <widget class="QPushButton" name="btnUpdate">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>171</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Получить обновления</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelUpdateInfo">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>30</y>
-       <width>151</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
+    <widget class="QWidget" name="tabBackupSender">
+     <attribute name="title">
+      <string>Отправка архивов</string>
+     </attribute>
     </widget>
    </widget>
   </widget>
@@ -288,11 +285,29 @@
     </property>
     <addaction name="action"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Установочные пакеты</string>
+    </property>
+    <addaction name="actionOpenTasksDir"/>
+    <addaction name="actionOpenCurrentTaskDir"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <action name="action">
    <property name="text">
     <string>Пошаговая Инструкция</string>
+   </property>
+  </action>
+  <action name="actionOpenTasksDir">
+   <property name="text">
+    <string>Открыть директорию с заданиями</string>
+   </property>
+  </action>
+  <action name="actionOpenCurrentTaskDir">
+   <property name="text">
+    <string>Открыть директорию с текущим заданием</string>
    </property>
   </action>
  </widget>

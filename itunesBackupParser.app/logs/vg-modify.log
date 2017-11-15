@@ -1,0 +1,23 @@
+-------Start modify app for uuid folder /Users/maxudin/WORK/tasks/104304: Wed Nov 15 10:43:26 +05 2017----------
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/CydiaSubstrate: replacing existing signature
+2017-11-15 10:43:28.229648+0500 codesign[49951:1321839] CMSDecoderCopySignerStatus failed with kCMSSignerInvalidSignature error (3)
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/PlugIns/Intents.appex/Intents: replacing existing signature
+2017-11-15 10:43:28.392754+0500 codesign[49957:1321859] CMSDecoderCopySignerStatus failed with kCMSSignerInvalidSignature error (3)
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/PlugIns/IntentsUI.appex/IntentsUI: replacing existing signature
+2017-11-15 10:43:28.552803+0500 codesign[49963:1321878] CMSDecoderCopySignerStatus failed with kCMSSignerInvalidSignature error (3)
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/PlugIns/ShareExtension.appex/ShareExtension: replacing existing signature
+2017-11-15 10:43:28.792461+0500 codesign[49969:1321899] CMSDecoderCopySignerStatus failed with kCMSSignerInvalidSignature error (3)
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/PlugIns/TodayExtension.appex/TodayExtension: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCore.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCoreAudio.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCoreData.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCoreGraphics.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCoreImage.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftCoreMedia.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftDarwin.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftDispatch.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftFoundation.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftObjectiveC.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftQuartzCore.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/Frameworks/libswiftUIKit.dylib: replacing existing signature
+/Users/maxudin/WORK/tasks/104304/scripts/createIpa/build/whatsappPatched.app/WhatsApp: replacing existing signature

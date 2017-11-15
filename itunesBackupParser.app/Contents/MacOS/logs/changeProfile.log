@@ -1,0 +1,29 @@
+# Logfile created on 2017-11-15 11:02:48 +0500 by logger.rb/56815
+I, [2017-11-15T11:02:48.573932 #50654]  INFO -- : 
+
+ Start ruby script
+I, [2017-11-15T11:02:48.573967 #50654]  INFO -- : ruby version is:2.4.2
+I, [2017-11-15T11:02:48.573983 #50654]  INFO -- : 
+
+ Start process
+I, [2017-11-15T11:02:48.573994 #50654]  INFO -- : 
+
+ Start login
+I, [2017-11-15T11:02:50.951960 #50654]  INFO -- : 
+
+ End login
+I, [2017-11-15T11:02:50.951992 #50654]  INFO -- : 
+
+ Add new device to portal
+I, [2017-11-15T11:02:50.952009 #50654]  INFO -- : 
+
+ Start addDevice
+I, [2017-11-15T11:03:05.365885 #50654]  INFO -- : 
+
+ Start download profile
+I, [2017-11-15T11:03:08.464404 #50654]  INFO -- : 
+
+ End download profile
+I, [2017-11-15T11:03:08.464449 #50654]  INFO -- : 
+
+ End ruby script

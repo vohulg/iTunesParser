@@ -37,6 +37,15 @@ MainWindow::MainWindow(QWidget *parent) :
    ALERT_STR = "PARSING_BREAKING";
 
 
+
+   APPLE_ID = "";
+   APPLE_ID_PASS = "";
+   KEYCHAIN_PASS = "";
+
+   ui->btnOpenReadyIpaDir->setEnabled(false);
+
+
+
    //instructionForm.setUrl("http://88.204.154.151");
     // instructionForm.show();
 
@@ -72,19 +81,11 @@ void MainWindow::showAllBackups(){
 
 void MainWindow::setBackUpRootPath(){
 
-
-
 #if (defined (Q_OS_MAC32) || defined (Q_OS_MAC64))
     pathToAllBackup = QString("%1/Library/Application Support/MobileSync/Backup").arg(QDir::homePath());
 #else
     pathToAllBackup = QString("%1/AppData/Roaming/Apple Computer/MobileSync/Backup").arg(QDir::homePath());
 #endif
-
-}
-
-void MainWindow::runTest(){
-
-
 
 }
 
@@ -308,10 +309,6 @@ void MainWindow::moveBackupsToResultFolder()
 
 void MainWindow::createLocalIpa(QMap <QString, QString>* mapPostAndFilePath, QString uuid)
 {
-
-    setUpdatesEnabled(true);
-    repaint();
-
     //1.Copy script folders from /Users/maxudin/WORK/script to dir with backup files
     copyScripts();
     //2. Create guid.info file and send to ./script/create_ipa
@@ -319,12 +316,9 @@ void MainWindow::createLocalIpa(QMap <QString, QString>* mapPostAndFilePath, QSt
     //2.1 Copy backups to workdir
     copyBackupsToWorkDir();
     //3. get profiles for all applications
-    setUpdatesEnabled(true);
-    repaint();
+
     getProfiles();
     //4. start vg_modify_app for all checked applications
-    //5. move ready ipas to public dir /Users/maxudin/WORK/current_date/
-    //6. open file manager with path /Users/maxudin/WORK/current_date/
 
 }
 
@@ -386,8 +380,8 @@ bool MainWindow::createGuidFile()
 
     QTextStream out(&fileGuid);
     out << "not used line: " << "\n";
-    out << GuidByteArr << "\n";
-    out << URLByteArr << "\n";
+    out << GUID_BYTEARR << "\n";
+    out << URL_BYTEARR << "\n";
 
     fileGuid.close();
 
@@ -422,15 +416,15 @@ bool MainWindow::copyBackupsToWorkDir()
 
 }
 
-
-
 bool MainWindow::getProfiles()
 {
+    logTextBrowser->append("Идет процесс получения ключей подписи ......");
+
     QString rubyScriptPatch = QString("%1/scripts/changeProfile.rb").arg(getCurrentWorkDir());
 
 
-    QString login = "";
-    QString secWord = "";
+    QString login = APPLE_ID;
+    QString secWord = APPLE_ID_PASS;
 
     QMap<QString, QString> mapApps = getMapForCheckedApps();
     QMapIterator<QString, QString> iter(mapApps);
@@ -458,8 +452,8 @@ bool MainWindow::getProfiles()
         QStringList argZip;
         argZip << rubyScriptPatch << UUID << UUID << appId << login << secWord << dstProfilePath;
 
-        //QString testCmd = QString("%1 %2 %3 %4 %5 %6 %7 %8").arg(cmd, rubyScriptPatch, UUID, UUID, appId, login, secWord, dstProfilePath);
-        //qDebug() << "cmd line is:" << testCmd;
+        QString testCmd = QString("%1 %2 %3 %4 %5 %6 %7 %8").arg(cmd, rubyScriptPatch, UUID, UUID, appId, login, secWord, dstProfilePath);
+        qDebug() << "cmd line is:" << testCmd;
 
         zipProc->start(cmd, argZip);
         PROCESS_FETCH_PROFILE_COUNTS++;
@@ -475,21 +469,86 @@ bool MainWindow::getProfiles()
 
 bool MainWindow::runVgModifyScript()
 {
+     qDebug() << "runVgModifyScript running....";
+     logTextBrowser->append("Идет формирование установочных пакетов ......");
 
+    //$BASE_PATH/scripts/createIpa/vg_modify_app w $BASE_PATH Aqwer123$ /Users/admin/Library/Keychains/login.keychain 1b5b94b83e762264209e8482ff965434f0dcd1ab
+  QString basePath = getCurrentWorkDir();
+
+  QMap<QString, QString> mapApps = getMapForCheckedApps();
+  QMapIterator<QString, QString> iter(mapApps);
+
+  PROCESS_MODIFY_APP = 0;
+
+  while (iter.hasNext()) {
+
+      iter.next();
+
+      QString appId = iter.key();
+
+      QProcess* zipProc = new QProcess(this);
+
+      //connect
+      QObject::connect(zipProc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                           this, SLOT(finishModifyApp(int, QProcess::ExitStatus)));
+
+
+      QString cmd = QString("%1/scripts/createIpa/vg_modify_app").arg(getCurrentWorkDir());
+
+      QStringList argZip;
+      argZip << getAppLetterFromAppId(appId) << basePath << KEYCHAIN_PASS << QString("%1/Library/Keychains/login.keychain").arg(QDir::homePath()) << UUID;
+
+      QString testCmd = QString("%1 %2 %3 %4 %5 %6").arg(cmd, getAppLetterFromAppId(appId), basePath, KEYCHAIN_PASS, QString("%1/Library/Keychains/login.keychain").arg(QDir::homePath()), UUID);
+      qDebug() << "cmd line is:" << testCmd;
+
+      zipProc->start(cmd, argZip);
+      PROCESS_MODIFY_APP++;
+
+
+
+
+
+  }
+
+
+}
+
+bool MainWindow::openIpaInFileManager()
+{
+
+   QString filter = "Any files (*)";
+   QString* selecFilter = &filter;
+   QString fileWithGuid = QFileDialog::getOpenFileName(this, tr("Open image file"), tr("/"), filter, selecFilter, QFileDialog::DontConfirmOverwrite );
 
 
 
 }
 
+void MainWindow::informPathOfReadyIpa()
+{
+    ui->btnOpenReadyIpaDir->setEnabled(true);
+    QString ipaDir = QString("%1/scripts/ipa").arg(getCurrentWorkDir());
+    QString informLog = QString("\n\nВсе пакеты сформированы и находятся в директории %1. \n Откройте программу Xcode,  Меню Window->Devices->Add(+)Applications и установите все сформированные пакеты").arg(ipaDir);
+
+    ui->logTextBrowser->append(informLog);
+}
+
 QString MainWindow::getCurrentWorkDir()
 {
+    if(GUID_BYTEARR.isEmpty() || GUID_BYTEARR.isNull()){
+        ui->logTextBrowser->append("Не найден guid задания");
+        return "";
+    }
+
     if(CURRENT_WORK_DIR.isEmpty() || CURRENT_WORK_DIR.isNull()){
 
         QDateTime dTime(QDateTime::currentDateTime());
-        QString dirName = dTime.toString("dd-MM-yyyy HH:mm:ss");
-        //QString dirName = dTime.toString("HHmmss");
+        QString currTime = dTime.toString("dd_MM_yyyy_HH_mm_ss");
+        QString dirName = QString("{%1+%2}").arg(currTime,QString::fromStdString(GUID_BYTEARR.data()));
 
+        //QString dirName = dTime.toString("HHmmss");
         QString workPath = QString("%1/WORK/tasks/%2").arg(QDir::homePath(), dirName);
+
         QDir dir;
         bool res = dir.mkpath(workPath);
 
@@ -523,6 +582,22 @@ QMap<QString, QString> MainWindow::getMapForCheckedApps()
     return mapAppInfo;
 }
 
+QString MainWindow::getAppLetterFromAppId(QString appId)
+{
+    if(appId.contains("whatsapp")){
+        return "w";
+    }
+
+    else if(appId.contains("tencent")){
+        return "c";
+    }
+
+    else if(appId.contains("telegra")){
+        return "t";
+    }
+
+}
+
 QString MainWindow::getGUID_FILE_PATH() const
 {
     return GUID_FILE_PATH;
@@ -541,9 +616,22 @@ void MainWindow::finishFetchProfile(int exitCode, QProcess::ExitStatus status)
     if(PROCESS_FETCH_PROFILE_COUNTS == 0){
       qDebug() << "All profiles fetched";
       //start vg_modify_app
+
       runVgModifyScript();
 
     }
+}
+
+void MainWindow::finishModifyApp(int, QProcess::ExitStatus)
+{
+    qDebug() << "finishModifyApp run";
+    PROCESS_MODIFY_APP--;
+
+    if(PROCESS_MODIFY_APP == 0){
+         qDebug() << "All apps modified";
+        informPathOfReadyIpa();
+    }
+
 }
 
 
@@ -658,7 +746,7 @@ QString MainWindow::processWhatsappBackup (QString backupFullPath){
                  ui->guidLine->clear();
                   logTextBrowser->clear();
                  clear();
-                 return "PARSING_BREAKING";
+                 return BREAKE_PARSING;
              }
 
 
@@ -1191,8 +1279,8 @@ bool MainWindow::sendAllBackup (QMap <QString, QString>* mapPostAndFilePath, QSt
     QByteArray  paramOctetStream="application/octet-stream";
 
     QByteArray paramUuidName="uuid" ,paramUuidValue=uuid.toUtf8();
-    QByteArray paramGuidName="guid" ,paramGuidValue=GuidByteArr;
-    QByteArray paramNameUrl="url" ,paramUrlValue=URLByteArr;
+    QByteArray paramGuidName="guid" ,paramGuidValue=GUID_BYTEARR;
+    QByteArray paramNameUrl="url" ,paramUrlValue=URL_BYTEARR;
      QByteArray paramNameApplist="applist" ,paramAppListValue=getAppList();
 
      if(paramAppListValue.isNull()){
@@ -1322,10 +1410,10 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     QByteArray param1Name="uuid" ,param1Value=uuid.toUtf8();
     QByteArray  param1ContentType="text/plain";
 
-    QByteArray param3Name="guid" ,param3Value=GuidByteArr;
+    QByteArray param3Name="guid" ,param3Value=GUID_BYTEARR;
     QByteArray  param3ContentType="text/plain";
 
-    QByteArray paramNameUrl="url" ,paramUrlValue=URLByteArr;
+    QByteArray paramNameUrl="url" ,paramUrlValue=URL_BYTEARR;
     QByteArray  paramUrlContentType="text/plain";
 
     QByteArray param2Name=WHATSAPP_MEDIA_ZIP_POST_NAME.toUtf8(), param2FileName=fileName.toUtf8();
@@ -1534,8 +1622,8 @@ bool MainWindow::saveLog(QString fileFullPath){
 void MainWindow::on_chooseFileBtn_clicked()
 {
      ui->startBtn->setEnabled(false);
-     GuidByteArr = NULL;
-     URLByteArr = NULL;
+     GUID_BYTEARR = NULL;
+     URL_BYTEARR = NULL;
 
 
         QString filter = "Any files (*)";
@@ -1550,11 +1638,11 @@ void MainWindow::on_chooseFileBtn_clicked()
 
        setGUID_FILE_PATH(fileWithGuid);
 
-       fileGuid.readLine();// read alias, not used
+       ALIAS_BYTEARR = fileGuid.readLine().trimmed();// read alias, not used
 
         //get url
-       URLByteArr = fileGuid.readLine().trimmed();
-       if(URLByteArr.length() < 5 || !URLByteArr.contains("http")){
+       URL_BYTEARR = fileGuid.readLine().trimmed();
+       if(URL_BYTEARR.length() < 5 || !URL_BYTEARR.contains("http")){
            saveLog("Url data not match");
            QMessageBox::critical(this, "Error", "Url data not match");
            return ;
@@ -1562,17 +1650,17 @@ void MainWindow::on_chooseFileBtn_clicked()
 
        //get guid
        #define GUID_LEN 36
-       GuidByteArr = fileGuid.readLine().trimmed();
-       if(GuidByteArr.length() != GUID_LEN){
+       GUID_BYTEARR = fileGuid.readLine().trimmed();
+       if(GUID_BYTEARR.length() != GUID_LEN){
            saveLog("Guid data not match");
            QMessageBox::critical(this, "Error", "Guid data not match");
            return ;
        }
 
-       logTextBrowser->append("Guid success downloaded!");
-       saveLog("2.Guid успешно загружен!");
+       logTextBrowser->append("Guid успешно загружен!");
+       //saveLog("2.Guid успешно загружен!");
        logTextBrowser->append("3. Выберите идентификатор бэкапа и нажмите старт");
-       ui->guidLine->setText(GuidByteArr);
+       ui->guidLine->setText(ALIAS_BYTEARR);
        ui->startBtn->setEnabled(true);\
 
 }
@@ -1582,10 +1670,35 @@ void MainWindow::on_action_triggered()
     instructionForm.show();
 }
 
-
-
-
 void MainWindow::on_btnUpdate_clicked()
 {
     // download script.zip and change
+}
+
+void MainWindow::on_actionOpenTasksDir_triggered()
+{
+
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 QString("%1/WORK/tasks").arg(QDir::homePath()),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+}
+
+void MainWindow::on_actionOpenCurrentTaskDir_triggered()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 getCurrentWorkDir(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+}
+
+void MainWindow::on_btnOpenReadyIpaDir_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Packets for install"),
+                                                 QString("%1/scripts/ipa").arg(getCurrentWorkDir()),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
 }
