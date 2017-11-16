@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //check new version of scripts
+    TUpdater updater;
+    updater.updateScripts();
+
    setBackUpRootPath();
    showAllBackups();
    logTextBrowser = ui->logTextBrowser;
@@ -38,9 +42,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+    /*
    APPLE_ID = "";
    APPLE_ID_PASS = "";
    KEYCHAIN_PASS = "";
+   */
 
    ui->btnOpenReadyIpaDir->setEnabled(false);
 
@@ -89,8 +95,89 @@ void MainWindow::setBackUpRootPath(){
 
 }
 
+void MainWindow::startCreateApp()
+{
+    if(!checkPreParsing()){
+        return;
+    }
+
+    parseWhatsApp();
+
+
+
+
+
+
+}
+
+ bool MainWindow::checkPreParsing(){
+
+     ui->startBtn->setEnabled(false);
+     logTextBrowser->append("\nОбработка бэкапа.........");
+     setUpdatesEnabled(true);
+     repaint();
+
+     QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), MANIFEST_NAME );
+      connectDatabase(manifestPath);
+
+      UUID = ui->backupsListComBox->currentText();
+
+     // if(UUID.isEmpty() || UUID.trimmed().length() != UUID_LENTH){
+      if(UUID.isEmpty()){
+          ui->startBtn->setEnabled(true);
+          ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 1px; border-color: red; }");
+          QMessageBox msgBox;
+          msgBox.setText("Введите корректный UUID устройства длиной 40 символов ");
+          msgBox.exec();
+          return false;
+      }
+
+      ui->backupsListComBox->setStyleSheet("QComboBox { border-style: outset;border-width: 0px; border-color: black; }");
+      //clear all tmpDir
+      clear();
+
+      return true;
+
+
+ }
+
+ void MainWindow::parseWechatApp(){
+
+     setCURRENT_PARSED_APP_ID(WECHAT_ID);
+
+      if(!ui->WechatAppCheckBox->isChecked()){
+          setRESULT_PARSING(RESULT_APP_NOT_CHECKED);
+          endParseApp(0,QProcess::NormalExit);
+          return;
+      }
+
+      QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), MANIFEST_NAME );
+      processWechatBackup(manifestPath);
+
+ }
+
+  void MainWindow::parseWhatsApp() {
+
+      setCURRENT_PARSED_APP_ID(WHATSAPP_ID);
+
+       if(!ui->whatsappAppcheckBox->isChecked()){
+           setRESULT_PARSING(RESULT_APP_NOT_CHECKED);
+           endParseApp(0,QProcess::NormalExit);
+           return;
+       }
+
+       QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), MANIFEST_NAME );
+       processWhatsappBackup(manifestPath);
+
+
+  }
+
 void MainWindow::on_startBtn_clicked()
 {
+
+
+    startCreateApp();
+    return;
 
     //ui->startBtn->setText("Ждите...");
     ui->startBtn->setEnabled(false);
@@ -98,10 +185,10 @@ void MainWindow::on_startBtn_clicked()
 
      setUpdatesEnabled(true);
      repaint();
-     //setUpdatesEnabled(false);
 
 
-    QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), "Manifest.db" );
+
+    QString manifestPath = QString("%1/%2/%3").arg(pathToAllBackup,ui->backupsListComBox->currentText(), MANIFEST_NAME );
      connectDatabase(manifestPath);
 
     UUID = ui->backupsListComBox->currentText();
@@ -238,6 +325,8 @@ void MainWindow::on_startBtn_clicked()
 
 
 }
+
+
 
 void MainWindow::showAlertWithInfoMsg(QString message){
 
@@ -598,6 +687,46 @@ QString MainWindow::getAppLetterFromAppId(QString appId)
 
 }
 
+QMap<QString, QString> MainWindow::getMAP_POST_AND_FILE_PATHS() const
+{
+    return MAP_POST_AND_FILE_PATHS;
+}
+
+void MainWindow::setMAP_POST_AND_FILE_PATHS(const QMap<QString, QString> &value)
+{
+    MAP_POST_AND_FILE_PATHS = value;
+}
+
+QString MainWindow::getCURRENT_ZIPPED_FILE_PATH() const
+{
+    return CURRENT_ZIPPED_FILE_PATH;
+}
+
+void MainWindow::setCURRENT_ZIPPED_FILE_PATH(const QString &value)
+{
+    CURRENT_ZIPPED_FILE_PATH = value;
+}
+
+int MainWindow::getRESULT_PARSING() const
+{
+    return RESULT_PARSING;
+}
+
+void MainWindow::setRESULT_PARSING(int value)
+{
+    RESULT_PARSING = value;
+}
+
+int MainWindow::getCURRENT_PARSED_APP_ID() const
+{
+    return CURRENT_PARSED_APP_ID;
+}
+
+void MainWindow::setCURRENT_PARSED_APP_ID(int value)
+{
+    CURRENT_PARSED_APP_ID = value;
+}
+
 QString MainWindow::getGUID_FILE_PATH() const
 {
     return GUID_FILE_PATH;
@@ -631,6 +760,104 @@ void MainWindow::finishModifyApp(int, QProcess::ExitStatus)
          qDebug() << "All apps modified";
         informPathOfReadyIpa();
     }
+
+}
+
+void MainWindow::checkWechatAppResult(){
+
+    int resultCode = getRESULT_PARSING();
+
+    if(resultCode == RESULT_ZIP_IS_SUCCESS){
+        moveBackupsToResultFolder();
+        QString zipPath = QString("%1/%2").arg(getBackupTmpDirFullPath_ForResult(),WECHAT_DB_FILE );
+
+        QFile zipFile(zipPath);
+        if(!zipFile.exists()){
+
+            QString message = "Внимание! Не найден бэкап Wechat. Переписка не будет восстановлена при замене приложения";
+            QMessageBox::StandardButton resBtn = QMessageBox::information( this, "Внимание",
+                                                                            message,
+                                                                            QMessageBox::Cancel,
+                                                                            QMessageBox::Cancel);
+            return;
+        }
+
+        MAP_POST_AND_FILE_PATHS.insert(WECHAT_POST_NAME,zipPath);
+
+        qDebug() << "zipPath:" << zipPath;
+
+    }
+
+
+}
+
+void MainWindow::checkWhatsAppResult(){
+
+    int resultCode = getRESULT_PARSING();
+
+    if(resultCode == RESULT_ZIP_IS_SUCCESS){
+        moveBackupsToResultFolder();
+        QString zipPath = QString("%1/%2").arg(getBackupTmpDirFullPath_ForResult(),WHATSAPP_MEDIA_ZIP_FILENAME );
+
+        QFile zipFile(zipPath);
+        if(!zipFile.exists()){
+
+            QString message = "Внимание! Не найден бэкап Whatsapp. Переписка не будет восстановлена при замене приложения";
+            QMessageBox::StandardButton resBtn = QMessageBox::information( this, "Внимание",
+                                                                            message,
+                                                                            QMessageBox::Cancel,
+                                                                            QMessageBox::Cancel);
+            return;
+        }
+
+        MAP_POST_AND_FILE_PATHS.insert(WHATSAPP_MEDIA_ZIP_POST_NAME,zipPath);
+
+        //add ChatStrorage.sqlite
+        QString dbFileNameFullPath = zipPath;
+        dbFileNameFullPath.replace(WHATSAPP_MEDIA_ZIP_FILENAME, WHATSAPP_DB_FILENAME);
+        MAP_POST_AND_FILE_PATHS.insert(WHATSAPP_DB_POST_NAME,dbFileNameFullPath);
+
+        qDebug() << "zipPath:" << zipPath;
+
+    }
+
+
+
+
+
+
+
+}
+
+void MainWindow::endParseApp(int, QProcess::ExitStatus)
+{
+
+    int currentApp = getCURRENT_PARSED_APP_ID();
+
+    //first run
+    if(currentApp == WHATSAPP_ID){
+       checkWhatsAppResult();
+       parseWechatApp();
+    }
+
+    //second run
+    else if(currentApp == WECHAT_ID){
+        checkWechatAppResult();
+        buildIpa(); // run this for last application
+
+    }
+
+}
+
+void MainWindow::buildIpa(){
+
+#if (defined (Q_OS_MAC32) || defined (Q_OS_MAC64))
+     createLocalIpa(&MAP_POST_AND_FILE_PATHS, UUID);
+#else
+     // for windows
+     createRemoteIpa(&MAP_POST_AND_FILE_PATHS, UUID);
+
+#endif
 
 }
 
@@ -715,6 +942,8 @@ QString MainWindow::processWhatsappBackup (QString backupFullPath){
 
      if(ChatStorageCopiedPath.isEmpty()){
 
+         setRESULT_PARSING(RESULT_NO_DB);
+         endParseApp(0,QProcess::NormalExit);
          return "";
      }
 
@@ -733,9 +962,12 @@ QString MainWindow::processWhatsappBackup (QString backupFullPath){
          quint64 backupSize = dir_size(getBackupTmpDirFullPath());
          if(backupSize > MAX_BYTE_PERMIT_FOR_BACKUP){
              showAlertWithInfoMsg("Размер бэкапа слишком большой, восстановление не возможно. Попробуйте отключить восстановление видеофайлов");
+             setRESULT_PARSING(RESULT_BACKUP_SIZE_UP_LIMIT);
+             endParseApp(0,QProcess::NormalExit);
              return "PARSING_BREAKING";
          }
 
+         /*
          if(backupSize > SIZE_OF_BACKUP_VERY_BIG){
              QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
                                                                              tr("Внимание! Размер бэкапа Whatsapp очень большой. Восстановление переписки возможно, однако при медленном интернете это займет большой количество времени. Продолжить формирование пакета с восстановлением переписки ?"),
@@ -751,19 +983,17 @@ QString MainWindow::processWhatsappBackup (QString backupFullPath){
 
 
          }
+         */
 
 
 
          //zip file for whatsapp
          logTextBrowser->append("\nСоздание архива медиафайлов Whatsapp .........\n");
-         QString zippedPath = zip(WHATSAPP_MEDIA_ZIP_FILENAME);
-         if(zippedPath.isEmpty()){
-             qDebug() << "faild zip file";
-         }
-         moveBackupsToResultFolder();
-         zippedPath = QString("%1/%2").arg(getBackupTmpDirFullPath_ForResult(),WHATSAPP_MEDIA_ZIP_FILENAME );
+         zip(WHATSAPP_MEDIA_ZIP_FILENAME);
 
-         return zippedPath;
+
+
+         return "";
 
      }
 
@@ -801,9 +1031,12 @@ QString MainWindow::processWechatBackup(QString backupFullPath){
         quint64 backupSize = dir_size(getBackupTmpDirFullPath());
         if(backupSize > MAX_BYTE_PERMIT_FOR_BACKUP){
             showAlertWithInfoMsg("Размер бэкапа слишком большой, восстановление не возможно. Попробуйте отключить восстановление видеофайлов");
+            setRESULT_PARSING(RESULT_BACKUP_SIZE_UP_LIMIT);
+            endParseApp(0,QProcess::NormalExit);
             return "PARSING_BREAKING";
         }
 
+        /*
         if(backupSize > SIZE_OF_BACKUP_VERY_BIG){
             QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
                                                                             tr("Внимание! Размер бэкапа Whatsapp очень большой. Восстановление переписки возможно, однако при медленном интернете это займет большой количество времени. Продолжить формирование пакета с восстановлением переписки ?"),
@@ -819,15 +1052,11 @@ QString MainWindow::processWechatBackup(QString backupFullPath){
 
 
         }
+        */
 
-        QString zippedPath = zip(WECHAT_DB_FILE);
-        if(zippedPath.isEmpty()){
-            qDebug() << "faild zip wechat db file";
-        }
-        qDebug() << "Success zip wechat db file";
-        moveBackupsToResultFolder();
-        zippedPath = QString("%1/%2").arg(getBackupTmpDirFullPath_ForResult(),WECHAT_DB_FILE );
-        return zippedPath;
+         zip(WECHAT_DB_FILE);
+
+        return "";
 
     }
 
@@ -1049,6 +1278,12 @@ QString MainWindow::zip(QString zipFileName){
 QString MainWindow::zipForMac(QString zipFileName)
 {
     QProcess* zipProc = new QProcess(this);
+
+    //connect
+    QObject::connect(zipProc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                         this, SLOT(endParseApp(int, QProcess::ExitStatus)));
+
+
     QString cmd = "/usr/bin/zip";
     QString zippedFileName = QString("%1/%2").arg(getBackupTmpDirFullPath(),zipFileName);
     QStringList argZip;
@@ -1067,16 +1302,15 @@ QString MainWindow::zipForMac(QString zipFileName)
         argZip << dirOrFileName;
     }
 
-
+    setCURRENT_ZIPPED_FILE_PATH(zippedFileName);
+    setRESULT_PARSING(RESULT_ZIP_IS_SUCCESS);
     zipProc->setWorkingDirectory(getBackupTmpDirFullPath());
     zipProc->start(cmd, argZip);
 
-    if (!zipProc->waitForFinished())
-        return "";
+   // if (!zipProc->waitForFinished())
+    //    return "";
 
-    QByteArray zipResult = zipProc->readAll();
 
-    qDebug() << "zip result:" << zipResult;
 
     return zippedFileName;
 

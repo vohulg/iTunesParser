@@ -1,0 +1,22 @@
+#include "TUpdater.h"
+
+TUpdater::TUpdater()
+{
+
+}
+
+bool TUpdater::updateScripts() {
+
+    //0 check if folder /Users/user/WORK/ exist, if no create so folder ===> 4.
+    //1. get by http file with version
+    //2. check version in local with remote
+    //3. if version diffrent download scripts.zip from server, remove old scripts folder and copy
+    return true;
+}
+
+void TUpdater::checkWorkDirExist(){
+    
+    
+    
+    
+}

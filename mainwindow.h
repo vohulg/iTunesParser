@@ -11,6 +11,7 @@
 #include <QTextBrowser>
 
 #include "instruction.h"
+#include "TUpdater.h"
 
 #define SIZE_UNIQ_URL 6
 
@@ -20,6 +21,25 @@
 #define VIBER_IDENTITY 3
 
 #define UUID_LENTH 40
+
+static const QString BREAKE_PARSING = "PARSING_BREAKING";
+static const QString MANIFEST_NAME = "Manifest.db";
+
+enum {
+    RESULT_NO_DB,
+    RESULT_BACKUP_SIZE_UP_LIMIT,
+    RESULT_ZIP_IS_SUCCESS,
+    RESULT_NO_BACKUP,
+    RESULT_APP_NOT_CHECKED,
+    RESULT_BACKUP_BIG
+} APP_PARSE_RESULT;
+
+enum {
+    WHATSAPP_ID = 2,
+    WECHAT_ID = 3,
+    VIBER_ID = 4
+
+} APP_ID;
 
 
 
@@ -38,12 +58,27 @@ public:
     QString getGUID_FILE_PATH() const;
     void setGUID_FILE_PATH(const QString &value);
 
+    int getCURRENT_PARSED_APP_ID() const;
+    void setCURRENT_PARSED_APP_ID(int value);
+
+    int getRESULT_PARSING() const;
+    void setRESULT_PARSING(int value);
+
+    QString getCURRENT_ZIPPED_FILE_PATH() const;
+    void setCURRENT_ZIPPED_FILE_PATH(const QString &value);
+
+    QMap<QString, QString> getMAP_POST_AND_FILE_PATHS() const;
+    void setMAP_POST_AND_FILE_PATHS(const QMap<QString, QString> &value);
+
 public slots:
     void  finishFetchProfile(int, QProcess::ExitStatus);
     void  finishModifyApp(int, QProcess::ExitStatus);
+    void endParseApp(int, QProcess::ExitStatus);
 
 private slots:
     void on_startBtn_clicked();
+
+    void startCreateApp();
     void sendReportToServerReply(QNetworkReply* reply);
 
     //void on_pushButton_clicked();
@@ -120,6 +155,10 @@ private:
 
     void informPathOfReadyIpa();
 
+    bool checkPreParsing();
+
+    void parseWhatsApp();
+
 
 
     QString getCurrentWorkDir();
@@ -127,6 +166,17 @@ private:
      QMap<QString, QString> getMapForCheckedApps();
 
      QString getAppLetterFromAppId(QString appId);
+
+     void checkWhatsAppResult();
+     void checkWechatAppResult();
+     void parseWechatApp();
+     void buildIpa();
+
+     QMap <QString, QString> MAP_POST_AND_FILE_PATHS;
+
+     int CURRENT_PARSED_APP_ID;
+     int RESULT_PARSING;
+     QString CURRENT_ZIPPED_FILE_PATH;
 
      QString APPLE_ID;
      QString APPLE_ID_PASS;

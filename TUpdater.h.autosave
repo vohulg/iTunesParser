@@ -1,0 +1,13 @@
+#ifndef TUPDATER_H
+#define TUPDATER_H
+
+#include <QObject>
+
+class TUpdater
+{
+public:
+    TUpdater();
+    bool updateScripts();
+};
+
+#endif // TUPDATER_H
