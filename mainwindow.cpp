@@ -14,8 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //check new version of scripts
-    TUpdater updater;
-    updater.updateScripts();
+
+    updater = new TUpdate;
+    updater->updateScripts();
 
    setBackUpRootPath();
    showAllBackups();
@@ -1742,6 +1743,7 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
 
 void MainWindow::sendReportToServerReply(QNetworkReply* reply){
 
+
      ui->startBtn->setEnabled(true);
 
      QByteArray replyInByte = reply->readAll();
@@ -1904,10 +1906,7 @@ void MainWindow::on_action_triggered()
     instructionForm.show();
 }
 
-void MainWindow::on_btnUpdate_clicked()
-{
-    // download script.zip and change
-}
+
 
 void MainWindow::on_actionOpenTasksDir_triggered()
 {

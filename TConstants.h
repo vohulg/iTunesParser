@@ -5,6 +5,8 @@
 #define SCRIPTS_DIR_NAME "scripts"
 #define TASKS_DIR_NAME "tasks"
 #define CREATE_IPA_DIR_NAME "createIpa"
+#define REMOTE_SCRIPTS_ZIP_NAME "scripts_remote.zip"
+#define UNZIP_META "__MACOSX"
 
 #define GUID_FILE_NAME "guid.info"
 
@@ -31,6 +33,9 @@
 
 #define URL_SCRIPTS_UPDATE_MANIFEST "http://88.204.154.151/ipa-builder-scripts-packets/manifest"
 #define URL_SCRIPTS_UPDATE_BACKUP "http://88.204.154.151/ipa-builder-scripts-packets/scripts.zip"
+
+#define VERSIONS_EQUAL 0
+#define VERSION_DIFFRENT -1
 
 
 #endif // TCONSTANTS_H

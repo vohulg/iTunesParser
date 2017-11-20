@@ -11,7 +11,7 @@
 #include <QTextBrowser>
 
 #include "instruction.h"
-#include "TUpdater.h"
+#include "TUpdate.h"
 
 #define SIZE_UNIQ_URL 6
 
@@ -87,7 +87,7 @@ private slots:
 
     void on_action_triggered();
 
-    void on_btnUpdate_clicked();
+    //void on_btnUpdate_clicked();
 
     void on_actionOpenTasksDir_triggered();
 
@@ -102,6 +102,7 @@ private:
     QString currentBackup;
     QString UUID; //use for name tmpFolder
     QTextBrowser* logTextBrowser;
+    TUpdate* updater;
 
     void runTest();
     void setBackUpRootPath();

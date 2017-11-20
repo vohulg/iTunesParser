@@ -17,13 +17,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     instruction.cpp \
-    TUpdater.cpp
+    TUpdate.cpp
 
 
 HEADERS  += mainwindow.h \
     instruction.h \
-    TUpdater.h \
-    TConstants.h
+    TConstants.h \
+    TUpdate.h
 
 
 FORMS    += mainwindow.ui \

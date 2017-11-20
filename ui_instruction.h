@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'instruction.ui'
 **
-** Created by: Qt User Interface Compiler version 5.2.1
+** Created by: Qt User Interface Compiler version 5.6.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -71,7 +71,7 @@ public:
 
     void retranslateUi(QWidget *Instruction)
     {
-        Instruction->setWindowTitle(QApplication::translate("Instruction", "\320\237\320\276\321\210\320\260\320\263\320\260\320\262\320\260\321\217 \320\270\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217.", 0));
+        Instruction->setWindowTitle(QApplication::translate("Instruction", "\320\237\320\276\321\210\320\260\320\263\320\260\320\262\320\260\321\217 \320\270\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217.", Q_NULLPTR));
         textBrowser->setHtml(QApplication::translate("Instruction", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -159,8 +159,8 @@ public:
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:"
                         "0px; -qt-block-indent:0; text-indent:0px;\"> </p>\n"
 "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", 0));
-        label->setText(QApplication::translate("Instruction", "\320\241\321\201\321\213\320\273\320\272\320\260 \320\264\320\273\321\217 \321\203\321\201\321\202\320\260\320\275\320\276\320\262\320\272\320\270:", 0));
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", Q_NULLPTR));
+        label->setText(QApplication::translate("Instruction", "\320\241\321\201\321\213\320\273\320\272\320\260 \320\264\320\273\321\217 \321\203\321\201\321\202\320\260\320\275\320\276\320\262\320\272\320\270:", Q_NULLPTR));
     } // retranslateUi
 
 };

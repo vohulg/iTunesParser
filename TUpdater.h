@@ -7,8 +7,11 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-class TUpdater
+
+class TUpdater : QObject
 {
+    Q_OBJECT
+
 public:
     TUpdater();
     bool updateScripts();
@@ -17,9 +20,12 @@ public:
     QString requestRemoteVersion();
 
 private:
+    void endGetVerdion(QNetworkReply* reply);
 
 public slots:
     void finishGetVersion(QNetworkReply* reply);
+
+
 
 };
 

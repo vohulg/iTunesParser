@@ -1,6 +1,7 @@
 #include "TUpdater.h"
 #include <QDir>
 #include <QFile>
+#include <QNetworkAccessManager>
 
 
 
@@ -14,6 +15,7 @@ bool TUpdater::updateScripts() {
     //0 check if folder /Users/user/WORK/ exist, if no create so folder ===> 4.
     checkWorkDirExist();
     //1 getLocalVersion
+    getLocalVersion();
     //2 getRemoteVersion
     requestRemoteVersion();
     //3. compare versions
@@ -48,11 +50,6 @@ bool TUpdater::checkWorkDirExist(){
 
     return true;
 
-
-
-
-
-
 }
 
 QString TUpdater::getLocalVersion(){
@@ -76,19 +73,19 @@ QString TUpdater::getLocalVersion(){
 }
 
 QString TUpdater::requestRemoteVersion() {
-
-    /*
-
+/*
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),
-    this, SLOT(finishGetVersion(QNetworlReply*)));
+
+
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply*)),
+    this, SLOT(endGetVerdion(QNetworkReply*)));
 
     QNetworkRequest request;
     request.setUrl(QUrl(URL_SCRIPTS_UPDATE_MANIFEST)); // source = url to the file you want to download.
     manager->get(request);
 
-    return version;
     */
+
 
     return "";
 
@@ -99,6 +96,12 @@ void TUpdater::finishGetVersion(QNetworkReply *reply)
     reply->deleteLater();
     QByteArray version = reply->readAll();
 
-    int x = 0;
+    qDebug() << "remote version is:" << version;
 
+
+}
+
+void TUpdater::endGetVerdion(QNetworkReply *reply)
+{
+     qDebug() << "remote version is:";
 }
