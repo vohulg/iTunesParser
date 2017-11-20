@@ -13,7 +13,7 @@ Instruction::~Instruction()
     delete ui;
 }
 
-void Instruction::setUrl(const QString & url) {
+QString Instruction::setUrl(const QString & url) {
 
     ui->installUrllineEdit->setText(url);
 }

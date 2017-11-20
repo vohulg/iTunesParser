@@ -22,7 +22,8 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     instruction.h \
-    TUpdater.h
+    TUpdater.h \
+    TConstants.h
 
 
 FORMS    += mainwindow.ui \

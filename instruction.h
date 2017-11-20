@@ -15,7 +15,7 @@ public:
     explicit Instruction(QWidget *parent = 0);
     ~Instruction();
 
-    void setUrl(const QString & url);
+    QString setUrl(const QString & url);
 
 private:
     Ui::Instruction *ui;

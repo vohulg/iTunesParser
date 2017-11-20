@@ -50,12 +50,14 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		mainwindow.cpp \
-		instruction.cpp qrc_images.cpp \
+		instruction.cpp \
+		TUpdater.cpp qrc_images.cpp \
 		moc_mainwindow.cpp \
 		moc_instruction.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		instruction.o \
+		TUpdater.o \
 		qrc_images.o \
 		moc_mainwindow.o \
 		moc_instruction.o
@@ -178,6 +180,7 @@ DIST          = ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/default_pre.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -202,9 +205,12 @@ DIST          = ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/yacc.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/lex.prf \
 		itunesBackupParser.pro mainwindow.h \
-		instruction.h main.cpp \
+		instruction.h \
+		TUpdater.h \
+		TConstants.h main.cpp \
 		mainwindow.cpp \
-		instruction.cpp
+		instruction.cpp \
+		TUpdater.cpp
 QMAKE_TARGET  = itunesBackupParser
 DESTDIR       = 
 TARGET        = itunesBackupParser.app/Contents/MacOS/itunesBackupParser
@@ -336,6 +342,7 @@ Makefile: itunesBackupParser.pro ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-cl
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/default_pre.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -486,6 +493,7 @@ Makefile: itunesBackupParser.pro ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-cl
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/qt_config.prf:
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang/qmake.conf:
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/default_pre.prf:
 ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/mac/default_pre.prf:
@@ -532,7 +540,7 @@ itunesBackupParser.app/Contents/Resources/empty.lproj:
 itunesBackupParser.app/Contents/Info.plist: 
 	@test -d itunesBackupParser.app/Contents || mkdir -p itunesBackupParser.app/Contents
 	@$(DEL_FILE) itunesBackupParser.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,com.yourcompany.itunesBackupParser,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,itunesBackupParser,g" -e "s,@LIBRARY@,itunesBackupParser,g" -e "s,@TYPEINFO@,????,g" ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang/Info.plist.app >itunesBackupParser.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,ru.xargon.itunesBackupParser,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,itunesBackupParser,g" -e "s,@LIBRARY@,itunesBackupParser,g" -e "s,@TYPEINFO@,????,g" ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang/Info.plist.app >itunesBackupParser.app/Contents/Info.plist
 
 all: Makefile \
 		itunesBackupParser.app/Contents/PkgInfo \
@@ -546,8 +554,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents images.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h instruction.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp instruction.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h instruction.h TUpdater.h TConstants.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp instruction.cpp TUpdater.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui instruction.ui $(DISTDIR)/
 
 
@@ -606,6 +614,10 @@ moc_mainwindow.cpp: ../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Head
 		instruction.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QWidget \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
+		TUpdater.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
 		mainwindow.h
 	/Users/maxudin/Qt5.6.3/5.6.3/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang -I/Users/maxudin/Projects/QT-projects/iTunesParser -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtGui.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtSql.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers -F/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib mainwindow.h -o moc_mainwindow.cpp
 
@@ -653,6 +665,10 @@ main.o: main.cpp mainwindow.h \
 		instruction.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QWidget \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
+		TUpdater.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
@@ -673,6 +689,10 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		instruction.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QWidget \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
+		TUpdater.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
 		ui_mainwindow.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QDir \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
@@ -689,6 +709,22 @@ instruction.o: instruction.cpp instruction.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qwidget.h \
 		ui_instruction.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o instruction.o instruction.cpp
+
+TUpdater.o: TUpdater.cpp TUpdater.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/QNetworkAccessManager \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/qnetworkaccessmanager.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/QNetworkRequest \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/qnetworkrequest.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/QNetworkReply \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/qnetworkreply.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QDir \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TUpdater.o TUpdater.cpp
 
 qrc_images.o: qrc_images.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_images.o qrc_images.cpp
