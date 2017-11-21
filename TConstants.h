@@ -1,7 +1,7 @@
 #ifndef TCONSTANTS_H
 #define TCONSTANTS_H
 
-#define WORK_DIR_NAME "WORK_TEST"
+#define WORK_DIR_NAME "WORK_test"
 #define SCRIPTS_DIR_NAME "scripts"
 #define TASKS_DIR_NAME "tasks"
 #define CREATE_IPA_DIR_NAME "createIpa"

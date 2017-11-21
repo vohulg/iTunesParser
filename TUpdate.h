@@ -29,6 +29,10 @@ public slots:
     void endDownloadScripts(QNetworkReply* reply);
     void endGetVersion(QNetworkReply* reply);
 
+signals:
+    void finishUpdate(int errorCode);
+
+
 
 };
 

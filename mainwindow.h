@@ -74,6 +74,7 @@ public slots:
     void  finishFetchProfile(int, QProcess::ExitStatus);
     void  finishModifyApp(int, QProcess::ExitStatus);
     void endParseApp(int, QProcess::ExitStatus);
+    void finishUpdateSlot(int errorCode);
 
 private slots:
     void on_startBtn_clicked();

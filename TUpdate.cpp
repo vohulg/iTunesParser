@@ -131,6 +131,7 @@ void TUpdate::endDownloadScripts(QNetworkReply *reply)
     if(!hFile.open(QFile::WriteOnly)){
 
         qDebug() << "File not opened";
+        emit finishUpdate(1);
         return;
     }
 
@@ -139,6 +140,7 @@ void TUpdate::endDownloadScripts(QNetworkReply *reply)
     qDebug() << byteCount<< " bytes written to file";
     if(byteCount == 0){
         qDebug() << "Faild write zip file";
+        emit finishUpdate(1);
         return;
     }
 
@@ -160,6 +162,7 @@ void TUpdate::endDownloadScripts(QNetworkReply *reply)
 
     if (!zipProc->waitForFinished()){
        qDebug() <<  zipProc->errorString();
+        emit finishUpdate(1);
         return ;
     }
 
@@ -173,6 +176,7 @@ void TUpdate::endDownloadScripts(QNetworkReply *reply)
     //4.remove __MACOS
     QDir dirMacMeta(QString("%1/%2/%3").arg(QDir::homePath(),WORK_DIR_NAME,UNZIP_META));
     dirMacMeta.removeRecursively();
+    emit finishUpdate(0);
 
 
 

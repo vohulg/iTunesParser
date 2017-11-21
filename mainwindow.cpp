@@ -16,7 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //check new version of scripts
 
     updater = new TUpdate;
-    updater->updateScripts();
+    //updater->updateScripts();
+
+    QObject::connect(updater, SIGNAL(finishUpdate(int)), this, SLOT(finishUpdateSlot(int)));
 
    setBackUpRootPath();
    showAllBackups();
@@ -41,7 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
    ALERT_STR = "PARSING_BREAKING";
 
-
+   APPLE_ID = "t7076473018@gmail.com";
+   APPLE_ID_PASS = "Lqwer123$";
+   KEYCHAIN_PASS = "Aqwer123$";
 
     /*
    APPLE_ID = "";
@@ -848,6 +852,11 @@ void MainWindow::endParseApp(int, QProcess::ExitStatus)
 
     }
 
+}
+
+void MainWindow::finishUpdateSlot(int errorCode)
+{
+    qDebug() << "UPDATE finished with code:" << errorCode;
 }
 
 void MainWindow::buildIpa(){
