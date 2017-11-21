@@ -564,6 +564,8 @@ bool MainWindow::getProfiles()
 bool MainWindow::runVgModifyScript()
 {
      qDebug() << "runVgModifyScript running....";
+     setUpdatesEnabled(true);
+     repaint();
      logTextBrowser->append("Идет формирование установочных пакетов ......");
 
     //$BASE_PATH/scripts/createIpa/vg_modify_app w $BASE_PATH Aqwer123$ /Users/admin/Library/Keychains/login.keychain 1b5b94b83e762264209e8482ff965434f0dcd1ab
@@ -574,17 +576,18 @@ bool MainWindow::runVgModifyScript()
 
   PROCESS_MODIFY_APP = 0;
 
-  while (iter.hasNext()) {
+  while (iter.hasNext()) {      
 
       iter.next();
 
       QString appId = iter.key();
+      ui->logTextBrowser->append(QString("Идет создание пакета для приложения %1 ").arg(appId));
+
 
       QProcess* zipProc = new QProcess(this);
 
       //connect
-      QObject::connect(zipProc, SIGNAL(finished(int,QProcess::ExitStatus)),
-                           this, SLOT(finishModifyApp(int, QProcess::ExitStatus)));
+     // QObject::connect(zipProc, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finishModifyApp(int, QProcess::ExitStatus)));
 
 
       QString cmd = QString("%1/scripts/createIpa/vg_modify_app").arg(getCurrentWorkDir());
@@ -596,13 +599,20 @@ bool MainWindow::runVgModifyScript()
       qDebug() << "cmd line is:" << testCmd;
 
       zipProc->start(cmd, argZip);
-      PROCESS_MODIFY_APP++;
 
+      if(!zipProc->waitForFinished()){
+          ui->logTextBrowser->append(QString("Ошибка при создании пакета для приложения %1 ").arg(appId));
+          continue;
 
+      }
 
-
-
+      //PROCESS_MODIFY_APP++;
   }
+
+  qDebug() << "All apps modified";
+  informPathOfReadyIpa();
+
+
 
 
 }
