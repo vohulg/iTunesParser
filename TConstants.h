@@ -1,12 +1,22 @@
 #ifndef TCONSTANTS_H
 #define TCONSTANTS_H
 
-#define WORK_DIR_NAME "WORK_test"
+#define WORK_DIR_NAME "WORK"
 #define SCRIPTS_DIR_NAME "scripts"
 #define TASKS_DIR_NAME "tasks"
 #define CREATE_IPA_DIR_NAME "createIpa"
 #define REMOTE_SCRIPTS_ZIP_NAME "scripts_remote.zip"
 #define UNZIP_META "__MACOSX"
+#define GUID_FILENAME "guid.info"
+
+ #define GUID_LEN 36
+
+#define BUNDLE_WHATSAPP "net.whatsapp.vg"
+#define BUNDLE_WECHAT ""
+#define BUNDLE_TELEGRAM ""
+
+#define FILENAME_WHATSAPP_ZIP "wmedia.zip"
+#define FILENAME_WECHAT_ZIP "wechat_dbfile.zip"
 
 #define GUID_FILE_NAME "guid.info"
 
@@ -36,6 +46,8 @@
 
 #define VERSIONS_EQUAL 0
 #define VERSION_DIFFRENT -1
+
+#define TAB_SEND_BACKUP_ID 1
 
 
 #endif // TCONSTANTS_H

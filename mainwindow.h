@@ -12,6 +12,7 @@
 
 #include "instruction.h"
 #include "TUpdate.h"
+#include "TBackupSender.h"
 
 #define SIZE_UNIQ_URL 6
 
@@ -104,6 +105,9 @@ private:
     QString UUID; //use for name tmpFolder
     QTextBrowser* logTextBrowser;
     TUpdate* updater;
+    TBackupSender* backSender;
+
+
 
     void runTest();
     void setBackUpRootPath();
@@ -173,6 +177,8 @@ private:
      void checkWechatAppResult();
      void parseWechatApp();
      void buildIpa();
+
+
 
      QMap <QString, QString> MAP_POST_AND_FILE_PATHS;
 

@@ -43,9 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
    ALERT_STR = "PARSING_BREAKING";
 
-   APPLE_ID = "t7076473018@gmail.com";
-   APPLE_ID_PASS = "Lqwer123$";
-   KEYCHAIN_PASS = "Aqwer123$";
+
 
     /*
    APPLE_ID = "";
@@ -54,6 +52,16 @@ MainWindow::MainWindow(QWidget *parent) :
    */
 
    ui->btnOpenReadyIpaDir->setEnabled(false);
+
+    backSender = new TBackupSender();
+    backSender->comboBoxTasks = ui->comboBoxTasks;
+    backSender->btnSendBackup = ui->btnSendBackups;
+    backSender->logSendBAckup = ui->textBrowserSendLog;
+    backSender->whatsappCheckBox = ui->whatsappAppcheckBox;
+    backSender->wechatCheckBox = ui->WechatAppCheckBox;
+    backSender->telegramCheckBox = ui->TelegramAppCheckBox;
+   QObject::connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), backSender, SLOT(tabBarClickedSlot(int)));
+   QObject::connect(ui->btnSendBackups, SIGNAL(clicked(bool)), backSender, SLOT(btnSendBackupClickSlot(bool)));
 
 
 
@@ -1904,7 +1912,7 @@ void MainWindow::on_chooseFileBtn_clicked()
        }
 
        //get guid
-       #define GUID_LEN 36
+
        GUID_BYTEARR = fileGuid.readLine().trimmed();
        if(GUID_BYTEARR.length() != GUID_LEN){
            saveLog("Guid data not match");

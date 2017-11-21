@@ -51,18 +51,22 @@ OBJECTS_DIR   = ./
 SOURCES       = main.cpp \
 		mainwindow.cpp \
 		instruction.cpp \
-		TUpdate.cpp qrc_images.cpp \
+		TUpdate.cpp \
+		TBackupSender.cpp qrc_images.cpp \
 		moc_mainwindow.cpp \
 		moc_instruction.cpp \
-		moc_TUpdate.cpp
+		moc_TUpdate.cpp \
+		moc_TBackupSender.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		instruction.o \
 		TUpdate.o \
+		TBackupSender.o \
 		qrc_images.o \
 		moc_mainwindow.o \
 		moc_instruction.o \
-		moc_TUpdate.o
+		moc_TUpdate.o \
+		moc_TBackupSender.o
 DIST          = ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/qdevice.pri \
 		../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/device_config.prf \
@@ -209,10 +213,12 @@ DIST          = ../../../Qt5.6.3/5.6.3/clang_64/mkspecs/features/spec_pre.prf \
 		itunesBackupParser.pro mainwindow.h \
 		instruction.h \
 		TConstants.h \
-		TUpdate.h main.cpp \
+		TUpdate.h \
+		TBackupSender.h main.cpp \
 		mainwindow.cpp \
 		instruction.cpp \
-		TUpdate.cpp
+		TUpdate.cpp \
+		TBackupSender.cpp
 QMAKE_TARGET  = itunesBackupParser
 DESTDIR       = 
 TARGET        = itunesBackupParser.app/Contents/MacOS/itunesBackupParser
@@ -556,8 +562,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents images.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h instruction.h TConstants.h TUpdate.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp instruction.cpp TUpdate.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h instruction.h TConstants.h TUpdate.h TBackupSender.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp instruction.cpp TUpdate.cpp TBackupSender.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui instruction.ui $(DISTDIR)/
 
 
@@ -598,9 +604,9 @@ qrc_images.cpp: images.qrc \
 		screen/IMG_0275.PNG
 	/Users/maxudin/Qt5.6.3/5.6.3/clang_64/bin/rcc -name images images.qrc -o qrc_images.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_instruction.cpp moc_TUpdate.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_instruction.cpp moc_TUpdate.cpp moc_TBackupSender.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_instruction.cpp moc_TUpdate.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_instruction.cpp moc_TUpdate.cpp moc_TBackupSender.cpp
 moc_mainwindow.cpp: ../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QMainWindow \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers/QNetworkAccessManager \
@@ -624,6 +630,9 @@ moc_mainwindow.cpp: ../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Head
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qprocess.h \
+		TBackupSender.h \
 		mainwindow.h
 	/Users/maxudin/Qt5.6.3/5.6.3/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang -I/Users/maxudin/Projects/QT-projects/iTunesParser -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtGui.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtSql.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers -F/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib mainwindow.h -o moc_mainwindow.cpp
 
@@ -645,8 +654,16 @@ moc_TUpdate.cpp: ../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QO
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qprocess.h \
 		TUpdate.h
 	/Users/maxudin/Qt5.6.3/5.6.3/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang -I/Users/maxudin/Projects/QT-projects/iTunesParser -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtGui.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtSql.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers -F/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib TUpdate.h -o moc_TUpdate.cpp
+
+moc_TBackupSender.cpp: ../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
+		TBackupSender.h
+	/Users/maxudin/Qt5.6.3/5.6.3/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/mkspecs/macx-clang -I/Users/maxudin/Projects/QT-projects/iTunesParser -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtGui.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtSql.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtNetwork.framework/Headers -I/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers -F/Users/maxudin/Qt5.6.3/5.6.3/clang_64/lib TBackupSender.h -o moc_TBackupSender.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -695,6 +712,9 @@ main.o: main.cpp mainwindow.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qprocess.h \
+		TBackupSender.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
@@ -723,6 +743,9 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qprocess.h \
+		TBackupSender.h \
 		ui_mainwindow.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QDebug \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdebug.h \
@@ -751,8 +774,18 @@ TUpdate.o: TUpdate.cpp TUpdate.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QDir \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QFile \
-		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qfile.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QProcess \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qprocess.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TUpdate.o TUpdate.cpp
+
+TBackupSender.o: TBackupSender.cpp TBackupSender.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QObject \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		TConstants.h \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/QDebug \
+		../../../Qt5.6.3/5.6.3/clang_64/lib/QtCore.framework/Headers/qdebug.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TBackupSender.o TBackupSender.cpp
 
 qrc_images.o: qrc_images.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_images.o qrc_images.cpp
@@ -765,6 +798,9 @@ moc_instruction.o: moc_instruction.cpp
 
 moc_TUpdate.o: moc_TUpdate.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_TUpdate.o moc_TUpdate.cpp
+
+moc_TBackupSender.o: moc_TBackupSender.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_TBackupSender.o moc_TBackupSender.cpp
 
 ####### Install
 
