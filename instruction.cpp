@@ -6,6 +6,7 @@ Instruction::Instruction(QWidget *parent) :
     ui(new Ui::Instruction)
 {
     ui->setupUi(this);
+    ui->textBrowser->setVisible(false);
 }
 
 Instruction::~Instruction()

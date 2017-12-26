@@ -248,15 +248,33 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>Инструкция</string>
+     <string>Инструкции</string>
     </property>
     <addaction name="action"/>
+    <addaction name="action_show_whatsapp_guide"/>
+    <addaction name="action_show_wechat_guide"/>
+    <addaction name="action_show_telegram_guide"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <action name="action">
    <property name="text">
-    <string>Пошаговая Инструкция</string>
+    <string>Показать url для установки</string>
+   </property>
+  </action>
+  <action name="action_show_whatsapp_guide">
+   <property name="text">
+    <string>Инструкция для Whatsapp</string>
+   </property>
+  </action>
+  <action name="action_show_wechat_guide">
+   <property name="text">
+    <string>Инструкция для Wechat</string>
+   </property>
+  </action>
+  <action name="action_show_telegram_guide">
+   <property name="text">
+    <string>Инструкция для Telegram</string>
    </property>
   </action>
  </widget>

@@ -1,0 +1,14 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\instruction.o
+./release\GUIDE_WHATSAPP.o
+./release\GUIDE_TELEGRAM.o
+./release\GUIDE_WECHAT.o
+./release\qrc_images.o
+./release\moc_mainwindow.o
+./release\moc_instruction.o
+./release\moc_GUIDE_WHATSAPP.o
+./release\moc_GUIDE_TELEGRAM.o
+./release\moc_GUIDE_WECHAT.o
+);

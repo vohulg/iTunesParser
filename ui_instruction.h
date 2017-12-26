@@ -32,9 +32,10 @@ public:
     {
         if (Instruction->objectName().isEmpty())
             Instruction->setObjectName(QStringLiteral("Instruction"));
-        Instruction->resize(860, 541);
+        Instruction->resize(860, 49);
         textBrowser = new QTextBrowser(Instruction);
         textBrowser->setObjectName(QStringLiteral("textBrowser"));
+        textBrowser->setEnabled(false);
         textBrowser->setGeometry(QRect(10, 50, 831, 481));
         label = new QLabel(Instruction);
         label->setObjectName(QStringLiteral("label"));

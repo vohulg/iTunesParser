@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>860</width>
-    <height>541</height>
+    <height>49</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Пошагавая инструкция.</string>
   </property>
   <widget class="QTextBrowser" name="textBrowser">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>

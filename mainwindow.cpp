@@ -1270,8 +1270,21 @@ void MainWindow::on_chooseFileBtn_clicked()
 
 void MainWindow::on_action_triggered()
 {
-    instructionForm.show();
+   instructionForm.show();
 }
 
 
+void MainWindow::on_action_show_whatsapp_guide_triggered()
+{
+    GuideWhatsapp.show();
+}
 
+void MainWindow::on_action_show_wechat_guide_triggered()
+{
+    GuideWechat.show();
+}
+
+void MainWindow::on_action_show_telegram_guide_triggered()
+{
+    GuideTelegram.show();
+}

@@ -16,15 +16,24 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    instruction.cpp
+    instruction.cpp \
+    GUIDE_WHATSAPP.cpp \
+    GUIDE_TELEGRAM.cpp \
+    GUIDE_WECHAT.cpp
 
 
 HEADERS  += mainwindow.h \
-    instruction.h
+    instruction.h \
+    GUIDE_WHATSAPP.h \
+    GUIDE_TELEGRAM.h \
+    GUIDE_WECHAT.h
 
 
 FORMS    += mainwindow.ui \
-    instruction.ui
+    instruction.ui \
+    GUIDE_WHATSAPP.ui \
+    GUIDE_TELEGRAM.ui \
+    GUIDE_WECHAT.ui
 
 RESOURCES += \
     images.qrc

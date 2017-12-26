@@ -12,6 +12,12 @@
 
 #include "instruction.h"
 
+#include "GUIDE_WHATSAPP.h"
+#include "GUIDE_TELEGRAM.h"
+#include "GUIDE_WECHAT.h"
+
+
+
 #define SIZE_UNIQ_URL 6
 
 #define WHATSAPP_IDENTITY 0
@@ -45,9 +51,19 @@ private slots:
 
     void on_action_triggered();
 
+    void on_action_show_whatsapp_guide_triggered();
+
+    void on_action_show_wechat_guide_triggered();
+
+    void on_action_show_telegram_guide_triggered();
+
 private:
     Ui::MainWindow *ui;
     Instruction instructionForm;
+    GUIDE_WHATSAPP GuideWhatsapp;
+    GUIDE_TELEGRAM GuideTelegram;
+    GUIDE_WECHAT GuideWechat;
+
     QString pathToAllBackup;
     QString currentBackup;
     QString UUID; //use for name tmpFolder

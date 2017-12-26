@@ -34,6 +34,9 @@ class Ui_MainWindow
 {
 public:
     QAction *action;
+    QAction *action_show_whatsapp_guide;
+    QAction *action_show_wechat_guide;
+    QAction *action_show_telegram_guide;
     QWidget *centralWidget;
     QPushButton *startBtn;
     QTextBrowser *logTextBrowser;
@@ -63,6 +66,12 @@ public:
         MainWindow->resize(729, 556);
         action = new QAction(MainWindow);
         action->setObjectName(QStringLiteral("action"));
+        action_show_whatsapp_guide = new QAction(MainWindow);
+        action_show_whatsapp_guide->setObjectName(QStringLiteral("action_show_whatsapp_guide"));
+        action_show_wechat_guide = new QAction(MainWindow);
+        action_show_wechat_guide->setObjectName(QStringLiteral("action_show_wechat_guide"));
+        action_show_telegram_guide = new QAction(MainWindow);
+        action_show_telegram_guide->setObjectName(QStringLiteral("action_show_telegram_guide"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         startBtn = new QPushButton(centralWidget);
@@ -133,6 +142,9 @@ public:
 
         menuBar->addAction(menu->menuAction());
         menu->addAction(action);
+        menu->addAction(action_show_whatsapp_guide);
+        menu->addAction(action_show_wechat_guide);
+        menu->addAction(action_show_telegram_guide);
 
         retranslateUi(MainWindow);
 
@@ -142,7 +154,10 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "itunesBackupParser", 0));
-        action->setText(QApplication::translate("MainWindow", "\320\237\320\276\321\210\320\260\320\263\320\276\320\262\320\260\321\217 \320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217", 0));
+        action->setText(QApplication::translate("MainWindow", "\320\237\320\276\320\272\320\260\320\267\320\260\321\202\321\214 url \320\264\320\273\321\217 \321\203\321\201\321\202\320\260\320\275\320\276\320\262\320\272\320\270", 0));
+        action_show_whatsapp_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Whatsapp", 0));
+        action_show_wechat_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Wechat", 0));
+        action_show_telegram_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Telegram", 0));
         startBtn->setText(QApplication::translate("MainWindow", "Start", 0));
         label_2->setText(QApplication::translate("MainWindow", "\320\241\320\276\321\201\321\202\320\276\321\217\320\275\320\270\320\265", 0));
         label_3->setText(QString());
@@ -156,7 +171,7 @@ public:
         chooseFileBtn->setText(QApplication::translate("MainWindow", "\320\222\321\213\320\261\321\200\320\260\321\202\321\214 \321\204\320\260\320\271\320\273", 0));
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\261\321\215\320\272\320\260\320\277 \320\270\320\273\320\270 \320\262\320\262\320\265\320\264\320\270\321\202\320\265 UDID \321\203\321\201\321\202\321\200\320\276\320\271\321\201\321\202\320\262\320\260 \321\201 iTunes", 0));
         noRestoreCheckBox->setText(QApplication::translate("MainWindow", "\320\235\320\265 \320\262\320\276\321\201\321\201\321\202\320\260\320\275\320\260\320\262\320\273\320\270\320\262\320\260\321\202\321\214 \320\262\320\270\320\264\320\265\320\276 \321\204\320\260\320\271\320\273\321\213", 0));
-        menu->setTitle(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217", 0));
+        menu->setTitle(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\320\270", 0));
     } // retranslateUi
 
 };

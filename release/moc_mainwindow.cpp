@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[8];
-    char stringdata[123];
+    QByteArrayData data[11];
+    char stringdata[241];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,12 +36,18 @@ QT_MOC_LITERAL(3, 32, 23),
 QT_MOC_LITERAL(4, 56, 14),
 QT_MOC_LITERAL(5, 71, 5),
 QT_MOC_LITERAL(6, 77, 24),
-QT_MOC_LITERAL(7, 102, 19)
+QT_MOC_LITERAL(7, 102, 19),
+QT_MOC_LITERAL(8, 122, 39),
+QT_MOC_LITERAL(9, 162, 37),
+QT_MOC_LITERAL(10, 200, 39)
     },
     "MainWindow\0on_startBtn_clicked\0\0"
     "sendReportToServerReply\0QNetworkReply*\0"
     "reply\0on_chooseFileBtn_clicked\0"
     "on_action_triggered\0"
+    "on_action_show_whatsapp_guide_triggered\0"
+    "on_action_show_wechat_guide_triggered\0"
+    "on_action_show_telegram_guide_triggered\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -51,7 +57,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -59,14 +65,20 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   34,    2, 0x08,
-       3,    1,   35,    2, 0x08,
-       6,    0,   38,    2, 0x08,
-       7,    0,   39,    2, 0x08,
+       1,    0,   49,    2, 0x08,
+       3,    1,   50,    2, 0x08,
+       6,    0,   53,    2, 0x08,
+       7,    0,   54,    2, 0x08,
+       8,    0,   55,    2, 0x08,
+       9,    0,   56,    2, 0x08,
+      10,    0,   57,    2, 0x08,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 4,    5,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -82,6 +94,9 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 1: _t->sendReportToServerReply((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
         case 2: _t->on_chooseFileBtn_clicked(); break;
         case 3: _t->on_action_triggered(); break;
+        case 4: _t->on_action_show_whatsapp_guide_triggered(); break;
+        case 5: _t->on_action_show_wechat_guide_triggered(); break;
+        case 6: _t->on_action_show_telegram_guide_triggered(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -123,13 +138,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 7;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 7;
     }
     return _id;
 }
