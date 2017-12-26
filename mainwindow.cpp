@@ -1602,4 +1602,4 @@ void MainWindow::on_action_show_telegram_guide_triggered()
 {
     GuideTelegram.show();
 }
-}
+
