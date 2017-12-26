@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KEEP_ORIGINAL_APP_NAME</key>
+	<true/>
+	<key>OVERWRITE_ORIGINAL_APP</key>
+	<true/>
+	<key>CREATE_IPA_FILES</key>
+	<true/>
+	<key>REMOVE_PLUGINS</key>
+	<false/>
+</dict>
+</plist>

@@ -77,7 +77,13 @@ void MainWindow::showAllBackups(){
 
 void MainWindow::setBackUpRootPath(){
 
+
+
+#if (defined (Q_OS_MAC32) || defined (Q_OS_MAC64))
+    pathToAllBackup = QString("%1/Library/Application Support/MobileSync/Backup").arg(QDir::homePath());
+#else
     pathToAllBackup = QString("%1/AppData/Roaming/Apple Computer/MobileSync/Backup").arg(QDir::homePath());
+#endif
 
 }
 
@@ -222,7 +228,17 @@ void MainWindow::on_startBtn_clicked()
 
      }
 
-     sendAllBackup(mapPostAndFilePaths, UUID);
+
+
+#if (defined (Q_OS_MAC32) || defined (Q_OS_MAC64))
+     createLocalIpa(mapPostAndFilePaths, UUID);
+#else
+     // for windows
+     createRemoteIpa(mapPostAndFilePaths, UUID);
+
+#endif
+
+
 
 
 }
@@ -254,6 +270,8 @@ QString MainWindow::getBackupTmpDirFullPath_ForResult()
            return "";
         }
     }
+
+    qDebug() << "Dir for result is :" << tempDirPath;
     return tempDirPath;
 }
 
@@ -293,11 +311,251 @@ void MainWindow::moveBackupsToResultFolder()
 
 }
 
+void MainWindow::createLocalIpa(QMap <QString, QString>* mapPostAndFilePath, QString uuid)
+{
+
+    setUpdatesEnabled(true);
+    repaint();
+
+    //1.Copy script folders from /Users/maxudin/WORK/script to dir with backup files
+    copyScripts();
+    //2. Create guid.info file and send to ./script/create_ipa
+    createGuidFile();
+    //2.1 Copy backups to workdir
+    copyBackupsToWorkDir();
+    //3. get profiles for all applications
+    setUpdatesEnabled(true);
+    repaint();
+    getProfiles();
+    //4. start vg_modify_app for all checked applications
+    //5. move ready ipas to public dir /Users/maxudin/WORK/current_date/
+    //6. open file manager with path /Users/maxudin/WORK/current_date/
+
+}
+
+void MainWindow::createRemoteIpa(QMap <QString, QString>* mapPostAndFilePaths, QString uuid)
+{
+    sendAllBackup(mapPostAndFilePaths, UUID);
+
+}
+
+bool MainWindow::copyScripts()
+{
+
+    QString srcDir = QString("%1/WORK/scripts").arg(QDir::homePath());
+    //QString dstDir = getBackupTmpDirFullPath_ForResult();
+    QString dstDir = getCurrentWorkDir();
+
+    QProcess* zipProc = new QProcess(this);
+    QString cmd = "/bin/cp";
+
+    QStringList argZip;
+    argZip << "-r" << srcDir << dstDir;
+     zipProc->start(cmd, argZip);
+
+    if (!zipProc->waitForFinished())
+        return false;
+
+    QByteArray copyResult = zipProc->readAll();
+
+    //check if dir exist
+    QDir dir(QString("%1/scripts").arg(getCurrentWorkDir()));
+    if(dir.exists()){
+        return true;
+    }
+    else{
+        QString log = QString("Не удалось скопировать папку %1 в %2. Результат ошибки: %3").arg(srcDir, dstDir, copyResult);
+        ui->logTextBrowser->append(log);
+        return false;
+    }
+
+
+
+}
+
+bool MainWindow::createGuidFile()
+{
+    QString guidFilePath = QString("%1/scripts/createIpa/guid.info").arg(getCurrentWorkDir());
+
+    qDebug() << "guidFilePath:" << guidFilePath;
+
+    QFile fileGuid(guidFilePath);
+
+    //QFile fileGuid("/Users/maxudin/common/guid.info");
+
+    if (!fileGuid.open(QIODevice::WriteOnly)){
+        QString log = QString("Не удалось создать файл по пути %1 для записи guid с ошибкой %2").arg(guidFilePath, fileGuid.errorString());
+        ui->logTextBrowser->append(log);
+        return false;
+    }
+
+    QTextStream out(&fileGuid);
+    out << "not used line: " << "\n";
+    out << GuidByteArr << "\n";
+    out << URLByteArr << "\n";
+
+    fileGuid.close();
+
+    return true;
+
+}
+
+bool MainWindow::copyBackupsToWorkDir()
+{
+
+    QDir tmpDir(getBackupTmpDirFullPath_ForResult());
+    QStringList list = tmpDir.entryList();
+
+    foreach (QString fileName, list) {
+
+        if(fileName == "." || fileName == ".."){
+            continue;
+        }
+
+
+        QString srcFullPath = QString("%1/%2").arg(getBackupTmpDirFullPath_ForResult(), fileName);
+        QString dstFullPath = QString("%1/%2").arg(getCurrentWorkDir(), fileName);
+
+        QFile file(srcFullPath);
+        file.rename(dstFullPath);
+
+
+
+    }
+
+    return true;
+
+}
+
+
+
+bool MainWindow::getProfiles()
+{
+    QString rubyScriptPatch = QString("%1/scripts/changeProfile.rb").arg(getCurrentWorkDir());
+
+
+    QString login = "";
+    QString secWord = "";
+
+    QMap<QString, QString> mapApps = getMapForCheckedApps();
+    QMapIterator<QString, QString> iter(mapApps);
+
+    PROCESS_FETCH_PROFILE_COUNTS = 0;
+
+    while (iter.hasNext()) {
+
+        iter.next();
+
+        QString dstProfilePath = QString("%1/scripts/profile/%2").arg(getCurrentWorkDir(), iter.value());
+        QString appId = iter.key();
+
+        qDebug() << "Start ruby script for appId" << appId;
+
+        QProcess* zipProc = new QProcess(this);
+
+        //connect
+        QObject::connect(zipProc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                             this, SLOT(finishFetchProfile(int, QProcess::ExitStatus)));
+
+
+        QString cmd = "/usr/local/bin/ruby";
+
+        QStringList argZip;
+        argZip << rubyScriptPatch << UUID << UUID << appId << login << secWord << dstProfilePath;
+
+        //QString testCmd = QString("%1 %2 %3 %4 %5 %6 %7 %8").arg(cmd, rubyScriptPatch, UUID, UUID, appId, login, secWord, dstProfilePath);
+        //qDebug() << "cmd line is:" << testCmd;
+
+        zipProc->start(cmd, argZip);
+        PROCESS_FETCH_PROFILE_COUNTS++;
+
+        //if (!zipProc->waitForFinished())
+         //  return false;
+
+
+
+    }
+
+}
+
+bool MainWindow::runVgModifyScript()
+{
+
+
+
+
+}
+
+QString MainWindow::getCurrentWorkDir()
+{
+    if(CURRENT_WORK_DIR.isEmpty() || CURRENT_WORK_DIR.isNull()){
+
+        QDateTime dTime(QDateTime::currentDateTime());
+        QString dirName = dTime.toString("dd-MM-yyyy HH:mm:ss");
+        //QString dirName = dTime.toString("HHmmss");
+
+        QString workPath = QString("%1/WORK/tasks/%2").arg(QDir::homePath(), dirName);
+        QDir dir;
+        bool res = dir.mkpath(workPath);
+
+        if(res){
+           CURRENT_WORK_DIR = workPath;
+
+        }
+
+    }
+
+    return CURRENT_WORK_DIR;
+}
+
+QMap<QString, QString> MainWindow::getMapForCheckedApps()
+{
+
+   QMap <QString, QString> mapAppInfo;
+
+    if(ui->whatsappAppcheckBox->isChecked()){
+        mapAppInfo.insert("net.whatsapp.vg","whatsapp.mobileprovision");
+    }
+
+    if(ui->TelegramAppCheckBox->isChecked()){
+        mapAppInfo.insert("com.telegram.vg","telegram.mobileprovision");
+    }
+
+    if(ui->WechatAppCheckBox->isChecked()){
+        mapAppInfo.insert("com.tencent.vg","wechat.mobileprovision");
+    }
+
+    return mapAppInfo;
+}
+
+QString MainWindow::getGUID_FILE_PATH() const
+{
+    return GUID_FILE_PATH;
+}
+
+void MainWindow::setGUID_FILE_PATH(const QString &value)
+{
+    GUID_FILE_PATH = value;
+}
+
+void MainWindow::finishFetchProfile(int exitCode, QProcess::ExitStatus status)
+{
+    qDebug() << "processFinish with status:" << status;
+    PROCESS_FETCH_PROFILE_COUNTS--;
+
+    if(PROCESS_FETCH_PROFILE_COUNTS == 0){
+      qDebug() << "All profiles fetched";
+      //start vg_modify_app
+      runVgModifyScript();
+
+    }
+}
+
 
 void MainWindow::showAlertWithMsg(QString message){
 
     QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Внимание",
-                                                                    message,
+                                                                message,
                                                                     QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
                                                                     QMessageBox::Yes);
     if(resBtn == QMessageBox::No) {
@@ -693,6 +951,59 @@ bool MainWindow::copyFilesToTmpDir (QMap <QString, QString>* mapIosPathAndLocalP
 
 QString MainWindow::zip(QString zipFileName){
 
+    QString zipPath = "";
+
+#if (defined (Q_OS_MAC32) || defined (Q_OS_MAC64))
+     zipPath = zipForMac(zipFileName);
+#else
+    zipPath = zipForWin(zipFileName);
+#endif
+
+    return zipPath;
+
+}
+
+QString MainWindow::zipForMac(QString zipFileName)
+{
+    QProcess* zipProc = new QProcess(this);
+    QString cmd = "/usr/bin/zip";
+    QString zippedFileName = QString("%1/%2").arg(getBackupTmpDirFullPath(),zipFileName);
+    QStringList argZip;
+    argZip << "-r" << zippedFileName;
+
+    //set list of dir
+    QDir dir(getBackupTmpDirFullPath());
+
+    QStringList list = dir.entryList();
+
+    foreach (QString dirOrFileName, list) {
+        if(dirOrFileName == "." || dirOrFileName == ".."){
+            continue;
+        }
+
+        argZip << dirOrFileName;
+    }
+
+
+    zipProc->setWorkingDirectory(getBackupTmpDirFullPath());
+    zipProc->start(cmd, argZip);
+
+    if (!zipProc->waitForFinished())
+        return "";
+
+    QByteArray zipResult = zipProc->readAll();
+
+    qDebug() << "zip result:" << zipResult;
+
+    return zippedFileName;
+
+
+
+}
+
+QString MainWindow::zipForWin(QString zipFileName)
+{
+
     //"%ProgamFiles%\WinRAR\Rar.exe" a -ep1 -r "Name of ZIP file with path" "%UserProfile%\Desktop\someFolder"
    // rar a backup @backup.lst
 
@@ -717,6 +1028,7 @@ QString MainWindow::zip(QString zipFileName){
     qDebug() << "zip result:" << zipResult;
 
     return zippedFileName;
+
 
 }
 
@@ -1241,6 +1553,8 @@ void MainWindow::on_chooseFileBtn_clicked()
            return ;
        }
 
+       setGUID_FILE_PATH(fileWithGuid);
+
        fileGuid.readLine();// read alias, not used
 
         //get url
@@ -1287,4 +1601,5 @@ void MainWindow::on_action_show_wechat_guide_triggered()
 void MainWindow::on_action_show_telegram_guide_triggered()
 {
     GuideTelegram.show();
+}
 }

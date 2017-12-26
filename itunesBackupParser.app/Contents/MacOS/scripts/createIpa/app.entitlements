@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>application-identifier</key>
+	<string>YR5YE7745P.net.whatsapplication.appid</string>
+	<key>aps-environment</key>
+	<string>production</string>
+	<key>com.apple.developer.default-data-protection</key>
+	<string>NSFileProtectionComplete</string>
+	<key>com.apple.developer.icloud-container-development-container-identifiers</key>
+	<array>
+		<string>iCloud.net.whatsapppatch</string>
+	</array>
+	<key>com.apple.developer.icloud-container-environment</key>
+	<array>
+		<string>Development</string>
+		<string>Production</string>
+	</array>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.net.whatsapppatch</string>
+	</array>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+	<string>CloudDocuments</string>
+	</array>
+	<key>com.apple.developer.team-identifier</key>
+	<string>YR5YE7745P</string>
+	<key>com.apple.developer.ubiquity-container-identifiers</key>
+	<array>
+		<string>iCloud.net.whatsapppatch</string>
+	</array>
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>YR5YE7745P.*</string>
+	<key>com.apple.security.application-groups</key>
+	<array/>
+	<key>get-task-allow</key>
+	<false/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>YR5YE7745P.*</string>
+	</array>
+</dict>
+</plist>

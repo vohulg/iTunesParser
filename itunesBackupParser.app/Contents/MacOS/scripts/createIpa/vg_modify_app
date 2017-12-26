@@ -1,0 +1,380 @@
+#!/usr/bin/env bash
+
+#find codesign identity in system
+#security find-identity -v -p codesigning
+
+
+UUID_NAME=$5
+
+LOG_DIR="/var/log/arystan/$UUID_NAME"
+mkdir -p $LOG_DIR
+LOG="$LOG_DIR/vg-modify.log"
+
+if [ "$#" -ne 5 ]; then
+    echo "Illegal number of parameters: $(date)" >> $LOG
+    exit
+fi
+
+echo "-------Start modify app for uuid folder $2: $(date)----------" >> $LOG
+
+# run so: vg_modify_app letterOfApp /path/to/uuidDir keychainPass keychainPath uuid for example: vg_modify_app w /Users/admin/www/uuids/{difh9845794dslk} 012345678 /Users/admin/Library/Keychains/login.keychain difh9845794dslk
+UUID_DIR=$2
+KEYCHAN_PASS=$3
+KEYCHAIN_PATH=$4
+#KEYCHAN_PASS="A....."
+#KEYCHAIN_PATH="/Users/admin/Library/Keychains/login.keychain"
+
+ORIG_PATH="$UUID_DIR/scripts/createIpa"
+BASE_PATH="$UUID_DIR/scripts"
+
+echo "ORIG_PATH:$ORIG_PATH"
+echo "BASE_PATH:$BASE_PATH"
+
+TARGET=$1;
+
+case $TARGET in
+
+"W" | "w" )
+	echo "TARGET is whatsapp"
+	TARGET_NAME="whatsappPatched"
+	PP_EXTERNAL_TWEAK_PATH="$SOURCE_ROOT/pptweak.zip"
+	#PROVISION_PROFILE="/Users/admin/www/scripts/profile/whatsapp.mobileprovision"
+	PROVISION_PROFILE="$BASE_PATH/profile/whatsapp.mobileprovision"  
+	IPA_NAME="whatsapp_original.ipa"
+	NEW_PLIST="Info.plist-W"
+	;;
+
+"V" | "v" )
+	echo "TARGET is viber"
+	TARGET_NAME="viberPatched"
+	PP_EXTERNAL_TWEAK_PATH="$SOURCE_ROOT/pptweak.zip"
+	#PROVISION_PROFILE="/Users/admin/www/scripts/profile/viber.mobileprovision"
+	PROVISION_PROFILE="$BASE_PATH/profile/viber.mobileprovision"  
+	IPA_NAME="viber_original.ipa"
+	NEW_PLIST="Info.plist-V"
+	;;
+
+"T" | "t" )
+	echo "TARGET is telegram"
+	TARGET_NAME="telegramPatched"
+	PP_EXTERNAL_TWEAK_PATH="$SOURCE_ROOT/pptweak.zip"	
+	PROVISION_PROFILE="$BASE_PATH/profile/telegram.mobileprovision"  
+	IPA_NAME="telegram_original.ipa"
+	NEW_PLIST="Info.plist-T"
+	;;
+
+#wechat	
+"C" | "c" )
+	echo "TARGET is wechat"
+	TARGET_NAME="wechatPatched"
+	PP_EXTERNAL_TWEAK_PATH="$SOURCE_ROOT/pptweak.zip"	
+	PROVISION_PROFILE="$BASE_PATH/profile/wechat.mobileprovision"  
+	IPA_NAME="wechat_original.ipa"
+	NEW_PLIST="Info.plist-C"
+	;;
+	
+*)
+    echo "Press in param W or V or T or C letter"
+	exit 0;
+	;;
+
+esac
+
+
+
+
+#xcrun xcodebuild -scheme ppsideloader -project ppsideloader.xcodeproj -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 7 Plus,OS=10.2' -derivedDataPath build
+#xcrun xcodebuild -scheme ppsideloader -project ppsideloader.xcodeproj -configuration Debug -destination 'platform=iOS,name=Admin's iPhone,OS=10.2' -derivedDataPath build
+
+EXPANDED_CODE_SIGN_IDENTITY="5E8384B768F9091AFF75B419780D4F5B443EBFDB"
+#EXPANDED_CODE_SIGN_IDENTITY="7E8BBB32F326DD85407B613E982059B247D9316C" # distribution vohulg@gmail.com
+#EXPANDED_CODE_SIGN_IDENTITY="F215D208DF61D1321C6BD52FCF748A23DF5A8E9C" # developer
+
+
+
+
+#SOURCE_ROOT=/Users/admin/www/scripts/createIpa
+SOURCE_ROOT=$ORIG_PATH
+
+SRCROOT=$SOURCE_ROOT
+#PROVISION_PROFILE=21a08b3d-403b-4106-a94d-0bc5e88034a1.mobileprovision #ad hoc profile
+
+
+
+#IPAS_STORE_FOLDER="/Users/admin/www/scripts/ipa"
+IPAS_STORE_FOLDER="$BASE_PATH/ipa"
+
+BUILT_PRODUCTS_DIR="$SOURCE_ROOT/build"
+
+PP_CONFIG_PATH="$SOURCE_ROOT/PP_SIDELOADER_OPTIONS.plist"
+
+OVERWRITE_ORIGINAL_APP=$(/usr/libexec/PlistBuddy -c "Print OVERWRITE_ORIGINAL_APP" "$PP_CONFIG_PATH")
+echo "OVERWRITE_ORIGINAL_APP: $OVERWRITE_ORIGINAL_APP"
+
+KEEP_ORIGINAL_APP_NAME=$(/usr/libexec/PlistBuddy -c "Print KEEP_ORIGINAL_APP_NAME" "$PP_CONFIG_PATH")
+echo "KEEP_ORIGINAL_APP_NAME: $KEEP_ORIGINAL_APP_NAME"
+
+REMOVE_PLUGINS=$(/usr/libexec/PlistBuddy -c "Print REMOVE_PLUGINS" "$PP_CONFIG_PATH")
+echo "REMOVE_PLUGINS: $REMOVE_PLUGINS"
+
+#define some common paths
+TEMP_PATH="${SRCROOT}/temp"
+WORKING_DIR="${SRCROOT}/working_dir"
+EXTRACTED_IPA_PATH="$TEMP_PATH/EXTRACTED_IPA"
+
+rm -rf "$TEMP_PATH" || true
+rm -rf "$WORKING_DIR" || true
+rm -rf "$BUILT_PRODUCTS_DIR" || true
+
+mkdir -p "$TEMP_PATH" || true
+mkdir -p "$WORKING_DIR" || true
+mkdir -p "$BUILT_PRODUCTS_DIR" || true
+
+#lets extract the IPA
+echo "EXTRACTING IPA"
+unzip -oqq "${SRCROOT}/${IPA_NAME}" -d "$EXTRACTED_IPA_PATH"
+
+#find the .app path
+APP_PATH=$(set -- "$EXTRACTED_IPA_PATH/Payload/"*.app; echo "$1")
+echo "FOUND APP PATH: $APP_PATH"
+
+#copy udid.info file to extracted ipa folder
+cp "${SRCROOT}/udid.info" "$APP_PATH/udid.info"
+#copy guid.info file to extracted ipa folder
+cp "${SRCROOT}/guid.info" "$APP_PATH/guid.info"
+
+#copy JSPAtch.js
+#cp "${SRCROOT}/JSPatch.js" "$APP_PATH/JSPatch.js"
+
+# copy backup ==============================================================
+case $TARGET in
+
+"W" | "w" )
+	cp "${UUID_DIR}/ChatStorage.sqlite" "$APP_PATH/ChatStorage.sqlite"
+	cp "${UUID_DIR}/wmedia.zip" "$APP_PATH/wmedia.zip"
+	;;
+
+#wechat	
+"C" | "c" )
+	cp "${UUID_DIR}/wechat_dbfile.zip" "$APP_PATH/wechat_dbfile.zip"
+	;;
+
+"T" | "t" )
+	
+	;;
+
+#viber
+"V" | "v" )
+	cp "${UUID_DIR}/viber_dbfile.zip" "$APP_PATH/viber_dbfile.zip"
+	;;
+	
+*)
+    echo "Press in param W or V or T or C letter"
+	exit 0;
+	;;
+
+esac
+#==============================================================
+
+
+#change in plist gps privacy
+rm "$APP_PATH/Info.plist"
+cp "$SOURCE_ROOT/$NEW_PLIST" "$APP_PATH/Info.plist"
+
+PP_TWEAK_PATH="$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/pptweak.dylib"
+
+#define some common variables
+
+HOOKED_APP_BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier"  "$APP_PATH/Info.plist")
+
+HOOKED_APP_NAME=$(/usr/libexec/PlistBuddy -c "Print CFBundleDisplayName"  "$APP_PATH/Info.plist")
+HOOKED_APP_NAME="$HOOKED_APP_NAME ++"
+
+HOOKED_EXECUTABLE=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable"  "$APP_PATH/Info.plist")
+HOOKED_EXE_PATH="$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/$HOOKED_EXECUTABLE"
+
+PP_TWEAK_ZIP_PATH="$SOURCE_ROOT/pptweak.zip"
+
+#now we can unzip the tweak into working directory
+echo "EXTRACTING PP TWEAK"
+unzip -oqq "$PP_TWEAK_ZIP_PATH" -d "$WORKING_DIR"
+
+
+#copy over the app contents
+echo "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/"
+rm -rf "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app" || true
+mkdir -p "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app" || true
+cp -rf "$APP_PATH/" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/"
+
+#copy over all the dylibs
+cp -rf "$WORKING_DIR/" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/"
+
+#lets make sure the HOOKED_EXE has correct permissions
+if ! [[ -x "$HOOKED_EXE_PATH" ]]
+then
+    echo "EXE NOT EXECUTABLE SO CHANGING PERMISSIONS"
+    chmod +x "$HOOKED_EXE_PATH"
+else
+    echo "EXE IS EXECUTABLE"
+fi
+
+
+#add the dylib
+ echo "INSERT DYLIB"
+"${SRCROOT}/insert_dylib" --all-yes --inplace --overwrite "@executable_path/pptweak.dylib" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/$HOOKED_EXECUTABLE"
+
+
+#add the correct entitlements
+TEMP_PLIST="$TEMP_PATH/temp.plist"
+REAL_CODE_SIGN_ENTITLEMENTS="$TEMP_PATH/app.entitlements"
+
+#echo "security cms -D -i $PROVISION_PROFILE -o $TEMP_PLIST"
+
+#security cms -D -i "$PROVISION_PROFILE" -o "$TEMP_PLIST"
+#/usr/libexec/PlistBuddy -c "Print Entitlements" "$TEMP_PLIST" -x > "$REAL_CODE_SIGN_ENTITLEMENTS"
+
+cat <<XML > "$REAL_CODE_SIGN_ENTITLEMENTS"
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+XML
+	strings "$PROVISION_PROFILE" | sed -e '1,/<key>Entitlements<\/key>/d' -e '/<\/dict>/,$d' >> "$REAL_CODE_SIGN_ENTITLEMENTS"
+	echo "</dict></plist>" >> "$REAL_CODE_SIGN_ENTITLEMENTS"
+
+#for work in whatsapp input documents from iCloud 
+#REAL_CODE_SIGN_ENTITLEMENTS=$SOURCE_ROOT/app.entitlements
+
+
+#sign all the executable binaries
+for DYLIB in "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/"*.dylib
+do
+    FILENAME=$(basename $DYLIB)
+    echo "SIGNING: $FILENAME"
+    #/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$DYLIB" 
+    security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DYLIB" 2>>$LOG
+
+done
+
+#/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/CydiaSubstrate"
+security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/CydiaSubstrate" 2>>$LOG
+
+
+
+APP_PLUGINS_PATH="$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/PlugIns"
+if [ "$OVERWRITE_ORIGINAL_APP" != true ] || [ "$REMOVE_PLUGINS" == true ] ; then
+    echo 'REMOVING IPA PLUGINS'
+    #plugins cant be used on duplicate so lets just delete them
+    rm -rf "$APP_PLUGINS_PATH" || true
+fi
+
+if [ -d "$APP_PLUGINS_PATH" ]; then
+    for PLUGIN in "$APP_PLUGINS_PATH/"*.appex
+    do
+        #grab the plugin exe name
+        #echo "PLUGIN: $PLUGIN"
+
+        #if we don't care about push we can install it as an additional app
+        PLUGIN_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier"  "$PLUGIN/Info.plist")
+        echo "PLUGIN_ID: $PLUGIN_ID"
+
+        PLUGIN_EXE=$PLUGIN/$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable"  "$PLUGIN/Info.plist")
+        echo "PLUGIN_EXE: $PLUGIN_EXE"
+
+        #lets make sure the plugin has correct permissions
+        if ! [[ -x "$PLUGIN_EXE" ]]
+        then
+            echo "PLUGIN_EXE NOT EXECUTABLE SO CHANGING PERMISSIONS"
+            chmod +x "$PLUGIN_EXE"
+        else
+            echo "PLUGIN_EXE IS EXECUTABLE"
+        fi
+
+        #sign the extension
+        echo "SIGNING: $PLUGIN_ID"
+        #/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$PLUGIN_EXE" 
+        security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" "$PLUGIN_EXE" 2>>$LOG
+
+
+        #we also need to sign and update the plist of any app inside the plugin
+        for PLUGIN_APP in "$PLUGIN/"*.app
+        do
+            echo "PLUGIN_APP: $PLUGIN_APP"
+            if [ -d "$PLUGIN_APP" ]; then
+                PLUGIN_APP_EXE=$PLUGIN_APP/$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable"  "$PLUGIN_APP/Info.plist")
+                echo "PLUGIN_APP_EXE: $PLUGIN_APP_EXE"
+
+                #lets make sure the plugin has correct permissions
+                if ! [[ -x "$PLUGIN_APP_EXE" ]]
+                then
+                    echo "PLUGIN_APP_EXE NOT EXECUTABLE SO CHANGING PERMISSIONS"
+                    chmod +x "$PLUGIN_APP_EXE"
+                else
+                    echo "PLUGIN_APP_EXE IS EXECUTABLE"
+                fi
+
+                PLUGIN_APP_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier"  "$PLUGIN_APP/Info.plist")
+                echo "PLUGIN_APP_ID: $PLUGIN_APP_ID"
+
+                #sign the extension
+                echo "SIGNING: $PLUGIN_APP_ID"
+                #/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$PLUGIN_APP_EXE" 
+                security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" "$PLUGIN_APP_EXE" 2>>$LOG
+
+            fi
+        done
+    done
+fi
+
+
+
+APP_FRAMEWORKS_PATH="$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/Frameworks"
+if [ -d "$APP_FRAMEWORKS_PATH" ]; then
+for FRAMEWORK in "$APP_FRAMEWORKS_PATH/"*
+do
+    #sign the FRAMEWORK
+    FILENAME=$(basename $FRAMEWORK)
+    echo "SIGNING: $FILENAME WITH $EXPANDED_CODE_SIGN_IDENTITY"
+
+    #/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" "$FRAMEWORK" 
+    security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" "$FRAMEWORK" 2>>$LOG
+
+done
+fi
+
+#make sure to add entitlements to the original app binary
+echo "SIGNING: FINAL BINARY WITH $EXPANDED_CODE_SIGN_IDENTITY ENTITLEMENTS: $REAL_CODE_SIGN_ENTITLEMENTS"
+#/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --entitlements "$REAL_CODE_SIGN_ENTITLEMENTS" --timestamp=none "$HOOKED_EXE_PATH" > /var/log/vg-modify-app-codesign.log
+security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" --entitlements "$REAL_CODE_SIGN_ENTITLEMENTS" --timestamp=none "$HOOKED_EXE_PATH" 2>>$LOG
+
+
+#==============FROM XCODE=======================================
+
+#==============from xcode========================================
+
+echo "Put embedded.mobileprovision to app folder"
+echo "HOOKED_EXE_PATH:$HOOKED_EXE_PATH"
+
+cp -rf "$PROVISION_PROFILE" "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app/embedded.mobileprovision"
+
+/usr/bin/touch -c "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app"
+
+#/usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --entitlements "$REAL_CODE_SIGN_ENTITLEMENTS" --timestamp=none "$HOOKED_EXE_PATH" 
+security unlock-keychain -p "$KEYCHAN_PASS" "$KEYCHAIN_PATH" && /usr/bin/codesign --force --sign "$EXPANDED_CODE_SIGN_IDENTITY" --keychain "$KEYCHAIN_PATH" --entitlements "$REAL_CODE_SIGN_ENTITLEMENTS" --timestamp=none "$HOOKED_EXE_PATH" 2>>$LOG
+
+
+rm -rf "$TEMP_PATH" || true
+rm -rf "$WORKING_DIR" || true
+
+#zip contents	
+mkdir -p "$BUILT_PRODUCTS_DIR/Payload" 
+cp -r "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app" "$BUILT_PRODUCTS_DIR/Payload"
+cd "$BUILT_PRODUCTS_DIR"
+/usr/bin/zip -r $TARGET_NAME.ipa Payload 1>/dev/null
+rm -rf "$BUILT_PRODUCTS_DIR/$TARGET_NAME.app"
+rm -rf "$BUILT_PRODUCTS_DIR/Payload"
+
+rm -rf $IPAS_STORE_FOLDER/$TARGET_NAME.ipa
+mv $TARGET_NAME.ipa $IPAS_STORE_FOLDER/$TARGET_NAME.ipa
+	
+echo "-------End modify app for uuid folder $2: $(date)----------" >> $LOG
+
