@@ -86,7 +86,7 @@ $(DESTDIR_TARGET): ui_mainwindow.h ui_instruction.h $(OBJECTS)
 	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Debug itunesBackupParser.pro
+	@$(QMAKE) -spec win32-g++ -o Makefile.Debug itunesBackupParser.pro
 
 qmake_all: FORCE
 
@@ -110,16 +110,16 @@ compiler_rcc_make_all: debug/qrc_images.cpp
 compiler_rcc_clean:
 	-$(DEL_FILE) debug\qrc_images.cpp
 debug/qrc_images.cpp: images.qrc \
+		screen/IMG_0270.PNG \
+		screen/IMG_0274.PNG \
+		screen/IMG_0278.PNG \
+		screen/IMG_0269.PNG \
 		screen/IMG_0273.PNG \
 		screen/IMG_0277.PNG \
 		screen/IMG_0272.PNG \
 		screen/IMG_0276.PNG \
 		screen/IMG_0271.PNG \
-		screen/IMG_0275.PNG \
-		screen/IMG_0270.PNG \
-		screen/IMG_0274.PNG \
-		screen/IMG_0278.PNG \
-		screen/IMG_0269.PNG
+		screen/IMG_0275.PNG
 	C:\Qt\5.2.1\mingw48_32\bin\rcc.exe -name images images.qrc -o debug\qrc_images.cpp
 
 compiler_moc_header_make_all: debug/moc_mainwindow.cpp debug/moc_instruction.cpp
@@ -1140,7 +1140,12 @@ debug/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../Qt/5.2.1/mingw48_32/include/QtGui/qinputmethod.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QButtonGroup \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qbuttongroup.h \
+		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QCheckBox \
+		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qcheckbox.h \
+		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qabstractbutton.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QComboBox \
+		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QGroupBox \
+		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qgroupbox.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QHeaderView \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qheaderview.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QLabel \
@@ -1153,7 +1158,6 @@ debug/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qmenubar.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QPushButton \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qpushbutton.h \
-		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qabstractbutton.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QStatusBar \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/qstatusbar.h \
 		../../Qt/5.2.1/mingw48_32/include/QtWidgets/QToolBar \

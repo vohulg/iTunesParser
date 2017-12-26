@@ -109,6 +109,7 @@ private:
        QString VIBER_POST_NAME ;
 
      QString IPA_BUILDER_MAC_SERVER_IP ;
+     QString IPA_BUILDER_MAC_SERVER_URL;
 
      QString INSTALL_URL;
 

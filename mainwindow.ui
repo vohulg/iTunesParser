@@ -127,6 +127,9 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="ViberAppCheckBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -139,7 +142,7 @@
       <string>Viber</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
@@ -195,7 +198,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Выберите бэкап или введите uuid устройства с iTunes</string>
+     <string>Выберите бэкап или введите UDID устройства с iTunes</string>
     </property>
     <widget class="QComboBox" name="backupsListComBox">
      <property name="geometry">

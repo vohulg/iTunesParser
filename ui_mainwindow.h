@@ -94,8 +94,9 @@ public:
         WechatAppCheckBox->setChecked(true);
         ViberAppCheckBox = new QCheckBox(groupBox);
         ViberAppCheckBox->setObjectName(QStringLiteral("ViberAppCheckBox"));
+        ViberAppCheckBox->setEnabled(false);
         ViberAppCheckBox->setGeometry(QRect(110, 40, 70, 17));
-        ViberAppCheckBox->setChecked(true);
+        ViberAppCheckBox->setChecked(false);
         groupBox_2 = new QGroupBox(centralWidget);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(20, 100, 691, 61));
@@ -153,7 +154,7 @@ public:
         groupBox_2->setTitle(QApplication::translate("MainWindow", "\320\227\320\260\320\263\321\200\321\203\320\267\320\270\321\202\321\214 \321\204\320\260\320\271\320\273 \321\201 guid", 0));
         guidLine->setPlaceholderText(QApplication::translate("MainWindow", "empty", 0));
         chooseFileBtn->setText(QApplication::translate("MainWindow", "\320\222\321\213\320\261\321\200\320\260\321\202\321\214 \321\204\320\260\320\271\320\273", 0));
-        groupBox_3->setTitle(QApplication::translate("MainWindow", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\261\321\215\320\272\320\260\320\277 \320\270\320\273\320\270 \320\262\320\262\320\265\320\264\320\270\321\202\320\265 uuid \321\203\321\201\321\202\321\200\320\276\320\271\321\201\321\202\320\262\320\260 \321\201 iTunes", 0));
+        groupBox_3->setTitle(QApplication::translate("MainWindow", "\320\222\321\213\320\261\320\265\321\200\320\270\321\202\320\265 \320\261\321\215\320\272\320\260\320\277 \320\270\320\273\320\270 \320\262\320\262\320\265\320\264\320\270\321\202\320\265 UDID \321\203\321\201\321\202\321\200\320\276\320\271\321\201\321\202\320\262\320\260 \321\201 iTunes", 0));
         noRestoreCheckBox->setText(QApplication::translate("MainWindow", "\320\235\320\265 \320\262\320\276\321\201\321\201\321\202\320\260\320\275\320\260\320\262\320\273\320\270\320\262\320\260\321\202\321\214 \320\262\320\270\320\264\320\265\320\276 \321\204\320\260\320\271\320\273\321\213", 0));
         menu->setTitle(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217", 0));
     } // retranslateUi

