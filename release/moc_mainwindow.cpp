@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[13];
-    char stringdata[281];
+    QByteArrayData data[14];
+    char stringdata[317];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,7 +41,8 @@ QT_MOC_LITERAL(8, 117, 24),
 QT_MOC_LITERAL(9, 142, 19),
 QT_MOC_LITERAL(10, 162, 39),
 QT_MOC_LITERAL(11, 202, 37),
-QT_MOC_LITERAL(12, 240, 39)
+QT_MOC_LITERAL(12, 240, 39),
+QT_MOC_LITERAL(13, 280, 35)
     },
     "MainWindow\0finishFetchProfile\0\0"
     "QProcess::ExitStatus\0on_startBtn_clicked\0"
@@ -51,6 +52,7 @@ QT_MOC_LITERAL(12, 240, 39)
     "on_action_show_whatsapp_guide_triggered\0"
     "on_action_show_wechat_guide_triggered\0"
     "on_action_show_telegram_guide_triggered\0"
+    "on_action_show_main_guide_triggered\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -60,7 +62,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -68,19 +70,21 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    2,   54,    2, 0x0a,
-       4,    0,   59,    2, 0x08,
-       5,    1,   60,    2, 0x08,
-       8,    0,   63,    2, 0x08,
-       9,    0,   64,    2, 0x08,
-      10,    0,   65,    2, 0x08,
-      11,    0,   66,    2, 0x08,
-      12,    0,   67,    2, 0x08,
+       1,    2,   59,    2, 0x0a,
+       4,    0,   64,    2, 0x08,
+       5,    1,   65,    2, 0x08,
+       8,    0,   68,    2, 0x08,
+       9,    0,   69,    2, 0x08,
+      10,    0,   70,    2, 0x08,
+      11,    0,   71,    2, 0x08,
+      12,    0,   72,    2, 0x08,
+      13,    0,   73,    2, 0x08,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int, 0x80000000 | 3,    2,    2,
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 6,    7,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -103,6 +107,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 5: _t->on_action_show_whatsapp_guide_triggered(); break;
         case 6: _t->on_action_show_wechat_guide_triggered(); break;
         case 7: _t->on_action_show_telegram_guide_triggered(); break;
+        case 8: _t->on_action_show_main_guide_triggered(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -144,13 +149,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 9;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 9;
     }
     return _id;
 }

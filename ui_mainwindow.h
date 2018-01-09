@@ -37,6 +37,7 @@ public:
     QAction *action_show_whatsapp_guide;
     QAction *action_show_wechat_guide;
     QAction *action_show_telegram_guide;
+    QAction *action_show_main_guide;
     QWidget *centralWidget;
     QPushButton *startBtn;
     QTextBrowser *logTextBrowser;
@@ -72,6 +73,8 @@ public:
         action_show_wechat_guide->setObjectName(QStringLiteral("action_show_wechat_guide"));
         action_show_telegram_guide = new QAction(MainWindow);
         action_show_telegram_guide->setObjectName(QStringLiteral("action_show_telegram_guide"));
+        action_show_main_guide = new QAction(MainWindow);
+        action_show_main_guide->setObjectName(QStringLiteral("action_show_main_guide"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         startBtn = new QPushButton(centralWidget);
@@ -141,6 +144,8 @@ public:
         MainWindow->setMenuBar(menuBar);
 
         menuBar->addAction(menu->menuAction());
+        menu->addAction(action_show_main_guide);
+        menu->addSeparator();
         menu->addAction(action);
         menu->addAction(action_show_whatsapp_guide);
         menu->addAction(action_show_wechat_guide);
@@ -158,6 +163,7 @@ public:
         action_show_whatsapp_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Whatsapp", 0));
         action_show_wechat_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Wechat", 0));
         action_show_telegram_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\264\320\273\321\217 Telegram", 0));
+        action_show_main_guide->setText(QApplication::translate("MainWindow", "\320\230\320\275\321\201\321\202\321\200\321\203\320\272\321\206\320\270\321\217 \320\277\320\276\320\273\321\214\320\267\320\276\320\262\320\260\321\202\320\265\320\273\321\217 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\321\213", 0));
         startBtn->setText(QApplication::translate("MainWindow", "Start", 0));
         label_2->setText(QApplication::translate("MainWindow", "\320\241\320\276\321\201\321\202\320\276\321\217\320\275\320\270\320\265", 0));
         label_3->setText(QString());

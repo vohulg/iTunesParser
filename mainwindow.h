@@ -15,6 +15,7 @@
 #include "GUIDE_WHATSAPP.h"
 #include "GUIDE_TELEGRAM.h"
 #include "GUIDE_WECHAT.h"
+#include "GUIDE_MAIN.h"
 
 
 
@@ -63,12 +64,15 @@ private slots:
 
     void on_action_show_telegram_guide_triggered();
 
+    void on_action_show_main_guide_triggered();
+
 private:
     Ui::MainWindow *ui;
     Instruction instructionForm;
     GUIDE_WHATSAPP GuideWhatsapp;
     GUIDE_TELEGRAM GuideTelegram;
     GUIDE_WECHAT GuideWechat;
+    GUIDE_MAIN GuideMain;
 
     QString pathToAllBackup;
     QString currentBackup;

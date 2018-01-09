@@ -250,6 +250,8 @@
     <property name="title">
      <string>Инструкции</string>
     </property>
+    <addaction name="action_show_main_guide"/>
+    <addaction name="separator"/>
     <addaction name="action"/>
     <addaction name="action_show_whatsapp_guide"/>
     <addaction name="action_show_wechat_guide"/>
@@ -275,6 +277,11 @@
   <action name="action_show_telegram_guide">
    <property name="text">
     <string>Инструкция для Telegram</string>
+   </property>
+  </action>
+  <action name="action_show_main_guide">
+   <property name="text">
+    <string>Инструкция пользователя программы</string>
    </property>
   </action>
  </widget>

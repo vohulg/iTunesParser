@@ -5,10 +5,12 @@ INPUT(
 ./release\GUIDE_WHATSAPP.o
 ./release\GUIDE_TELEGRAM.o
 ./release\GUIDE_WECHAT.o
+./release\GUIDE_MAIN.o
 ./release\qrc_images.o
 ./release\moc_mainwindow.o
 ./release\moc_instruction.o
 ./release\moc_GUIDE_WHATSAPP.o
 ./release\moc_GUIDE_TELEGRAM.o
 ./release\moc_GUIDE_WECHAT.o
+./release\moc_GUIDE_MAIN.o
 );

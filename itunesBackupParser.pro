@@ -19,21 +19,24 @@ SOURCES += main.cpp\
     instruction.cpp \
     GUIDE_WHATSAPP.cpp \
     GUIDE_TELEGRAM.cpp \
-    GUIDE_WECHAT.cpp
+    GUIDE_WECHAT.cpp \
+    GUIDE_MAIN.cpp
 
 
 HEADERS  += mainwindow.h \
     instruction.h \
     GUIDE_WHATSAPP.h \
     GUIDE_TELEGRAM.h \
-    GUIDE_WECHAT.h
+    GUIDE_WECHAT.h \
+    GUIDE_MAIN.h
 
 
 FORMS    += mainwindow.ui \
     instruction.ui \
     GUIDE_WHATSAPP.ui \
     GUIDE_TELEGRAM.ui \
-    GUIDE_WECHAT.ui
+    GUIDE_WECHAT.ui \
+    GUIDE_MAIN.ui
 
 RESOURCES += \
     images.qrc
